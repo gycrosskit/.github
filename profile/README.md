@@ -4,6 +4,35 @@
 
 发布版本与平台配套核对日期：**2026-10-04**。Maven 由 JitPack 提供；iOS 原生接线与 HarmonyOS HAR 独立安装，版本可能不同。预发布状态以 Release 标记为准，包含没有 `rc` 后缀的工程候选；编译和链接通过仍需接入项目完成设备验收。
 
+## 组件地图与接入流程
+
+下图按用途分组，不表示组内组件互相依赖；各库独立安装，按业务需要选择。具体内部结构、公共类型和生命周期见各仓库 README 的“架构与调用流程”。
+
+```mermaid
+flowchart LR
+    App["宿主应用：业务、账号、UI、隐私准入"] --> Foundation["基础：Koin / Stately / MMKV"]
+    App --> Platform["平台能力：permission / media / scanner / location / toast / sound / system-actions"]
+    App --> Web["网页：compose-webview"]
+    App --> Vendor["厂商适配：jverification / wechat / customer-service / live-sdk"]
+    App --> Diagnostics["诊断：diagnostics / debug-tools"]
+    Web -->|"HarmonyOS 窗口策略共用"| Window["system-actions HAR"]
+    Foundation -->|"Koin Core 使用"| Stately["配套 Stately 适配版本"]
+```
+
+```mermaid
+flowchart TB
+    Choose["选择组件与 UI 入口"] --> Matrix["核对平台、工具链与配套版本"]
+    Matrix --> Maven["安装 Maven / KMP 依赖"]
+    Maven --> Native{"该入口需要独立原生包？"}
+    Native -->|"需要"| Package["按 README 安装 Pod / SPM / HAR"]
+    Native -->|"不需要"| Wire["宿主初始化、注册、权限与生命周期接线"]
+    Package --> Wire
+    Wire --> Build["目标平台编译与链接"]
+    Build --> Device["真机与业务验收"]
+```
+
+Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上架分别确认，编译通过后仍需真机验收。
+
 ## 基础依赖与 OpenHarmony 适配
 
 | 仓库 | 用途 | 已发布平台 | Maven 版本 |
