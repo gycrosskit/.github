@@ -16,7 +16,8 @@ for file in files:
     data = json.loads(file.read_text())
     variants = [
         variant for variant in data["variants"]
-        if not variant["name"].endswith(("SourcesElements-published", "MetadataElements-published"))
+        if variant["name"] != "metadataSourcesElements"
+        and not variant["name"].endswith(("SourcesElements-published", "MetadataElements-published"))
     ]
     if len(variants) != len(data["variants"]):
         data["variants"] = variants
