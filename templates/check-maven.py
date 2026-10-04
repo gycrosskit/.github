@@ -58,12 +58,17 @@ for module in modules:
             platforms.add(target)
         if "available-at" in variant:
             redirect = variant["available-at"]
-            assert resolve_artifact((module.parent / redirect["url"]).resolve()).is_file(), redirect
+            target_module = resolve_artifact((module.parent / redirect["url"]).resolve())
+            assert target_module.is_file(), redirect
+            target_variants = json.loads(target_module.read_text())["variants"]
+            assert any(item["name"] == variant["name"] for item in target_variants), variant
         for entry in variant.get("files", []):
             artifact = resolve_artifact((module.parent / entry["url"]).resolve())
             assert artifact.is_file(), artifact
             assert artifact.stat().st_size == entry["size"], artifact
-            assert hashlib.sha256(artifact.read_bytes()).hexdigest() == entry["sha256"], artifact
+            for algorithm in ("md5", "sha1", "sha256", "sha512"):
+                if algorithm in entry:
+                    assert hashlib.new(algorithm, artifact.read_bytes()).hexdigest() == entry[algorithm], artifact
 
 for module in modules:
     for variant in json.loads(module.read_text())["variants"]:
