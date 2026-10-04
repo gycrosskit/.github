@@ -7,7 +7,7 @@
 - [组件抽离路线图](docs/组件抽离路线图.md)：权限、扫码、媒体、定位等三端组件的边界、实施顺序与首版交付状态。
 - [Issues 与迭代流程](docs/Issues与迭代流程.md)：接入项目提交问题后，如何修复、验证、发布并关闭 Issue。
 - [组织默认 Issue 模板](.github/ISSUE_TEMPLATE/integration-problem.md)：收集版本、平台和复现信息；组件仓库可自行覆盖。
-- [`templates/jitpack-metadata.py`](templates/jitpack-metadata.py)：compose-webview、live-sdk、toast 三个仓库共用的 KMP 元数据修正脚本模板。
+- [`templates/jitpack-metadata.py`](templates/jitpack-metadata.py)：compose-webview、live-sdk、toast、debug-tools、customer-service 共用的 KMP 元数据修正脚本模板。
 - [`scripts/protect-main.sh`](scripts/protect-main.sh)：为新建的公开仓库配置 `main` 分支保护；规则定义在 [`templates/main-protection.json`](templates/main-protection.json)。
 - [`profile/README.md`](profile/README.md)：GitHub 组织主页内容。
 
