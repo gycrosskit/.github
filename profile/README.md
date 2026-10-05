@@ -63,7 +63,7 @@ Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上�
 
 | 仓库 | 用途 | 平台 | Maven 版本 | 接入边界 |
 | --- | --- | --- | --- | --- |
-| [diagnostics](https://github.com/gycrosskit/diagnostics) | 系统采集、私有文件、日志与有界网络诊断 | 三端、JVM | [0.2.0-rc.5](https://github.com/gycrosskit/diagnostics/releases/tag/0.2.0-rc.5) | Git Pod / Swift Package **0.2.0-rc.1**；可选钉钉传输已提供 OHOS 实现；宿主供准入、上传与凭据，无 HAR |
+| [diagnostics](https://github.com/gycrosskit/diagnostics) | 系统采集、私有文件、日志与有界网络诊断 | 三端、JVM | [0.2.0-rc.7](https://github.com/gycrosskit/diagnostics/releases/tag/0.2.0-rc.7) | 可选 Ktor 三端/JVM、OkHttp Android/JVM 采集；Git Pod / Swift Package **0.2.0-rc.1**；宿主供准入、脱敏、上传与凭据，无 HAR |
 | [debug-tools](https://github.com/gycrosskit/debug-tools) | Bug 协议、安全存储与摇动 | Android、iOS、OHOS | [0.2.0-rc.3](https://github.com/gycrosskit/debug-tools/releases/tag/0.2.0-rc.3) | Kuikly OHOS 配套 HAR **0.2.0-rc.3**（审核中；Release HAR 新建消费通过）；宿主供 UI、品牌、凭据与准入 |
 
 ## 厂商 SDK 集成
@@ -85,6 +85,7 @@ Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上�
 - 版本与变更：对应 **Releases / Git 标签**，固定版本消费，升级时同时检查平台原生包版本。
 - 问题反馈：在对应仓库 **Issues** 提供版本、平台、脱敏复现和日志，不上传凭据。
 - 测试与 API 审查：[14 个功能组件的回归、注释与验收边界](https://github.com/gycrosskit/.github/blob/main/docs/组件测试与API审查.md)。
+- 自动门禁：[14 库源码、发布产物及独立消费验证](https://github.com/gycrosskit/.github/blob/main/docs/持续集成门禁.md)。
 - 共用维护：[组件文档规范](https://github.com/gycrosskit/.github/blob/main/docs/组件文档规范.md) · [发布流程](https://github.com/gycrosskit/.github/blob/main/docs/发布流程.md)。
 
 debug-tools 和 customer-service 为多模块 JitPack 项目，根 KMP 坐标分别使用 `com.github.gycrosskit.debug-tools:debug-tools` 与 `com.github.gycrosskit.customer-service:customer-service`；安装时按 README 固定版本。Maven、Git Pod 与 OHPM 各自验收，Release 可下载不表示 OHPM 已上架。
