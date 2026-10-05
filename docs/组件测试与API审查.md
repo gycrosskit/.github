@@ -2,7 +2,7 @@
 
 审查日期：2026-10-05。范围为下表 14 个功能组件，依据各库本轮 `build/test-api-review/audit.md` 汇总。团队逐文件阅读自有生产源码、原生桥、现有测试和相关调用者，并补充关键契约回归；完整阅读不等于 100% 行为覆盖，也不代表所有平台已有动态测试。
 
-**本轮源码验证：14 库定向测试与受影响平台编译完成；当前 Gradle XML 共 549 次测试执行，547 次通过、2 次 App-hosted Keychain 显式跳过、0 失败。** 同一测试在不同平台执行会重复计数，Node/Swift/Python 行为检查另行核验，不混作唯一测试数量。 下表记录已有测试行为与新增回归。Gradle XML、Node/Swift 行为检查及 Native 链接分别核验，不把测试代码存在视为通过。组件源码与测试链接指向公开仓库 `main` 的入口，具体本轮变更以合并后的源码为准。
+**初轮源码验证：14 库定向测试与受影响平台编译完成；当前 Gradle XML 共 549 次测试执行，547 次通过、2 次 App-hosted Keychain 显式跳过、0 失败。** 同一测试在不同平台执行会重复计数，Node/Swift/Python 行为检查另行核验，不混作唯一测试数量。 下表记录已有测试行为与新增回归。Gradle XML、Node/Swift 行为检查及 Native 链接分别核验，不把测试代码存在视为通过。组件源码与测试链接指向公开仓库 `main` 的入口，具体本轮变更以合并后的源码为准。
 
 ## 关键回归与剩余边界
 
@@ -44,7 +44,7 @@
 | live-sdk | Swift 同样拒绝空白凭据；Android 把原有 require 移到 Main 派发前，在调用线程同步拒绝非法输入 | Swift Native Pod、Maven Android |
 | compose-webview | wire JSON 严格检查类型；iOS 新声明重置首航预算；独立 Native 修复 Boolean 装箱和 WebKit 规则编译，拒绝数字安全开关 | Maven core/Kuikly、CMP iOS；Git Pod0.2.0-rc.7 |
 
-其余 8 库本轮无运行行为修复；测试依赖和 harness 增强不改变生产功能。纯注释/测试无需据此重复发布二进制；上述 6 库已发布修复 Maven 版本并通过干净远程消费。WebView HAR 保留原有配套；宿主真实日志追加暴露 iOS Kuikly 原生布尔编码问题，独立 Git Pod 补修为0.2.0-rc.7，单独完成发布与远程验收。
+其余 8 库初轮无运行行为修复；测试依赖和 harness 增强不改变生产功能。纯注释/测试无需据此重复发布二进制；上述 6 库已发布修复 Maven 版本并通过干净远程消费。WebView HAR 保留原有配套；宿主真实日志追加暴露 iOS Kuikly 原生布尔编码问题，独立 Git Pod 补修为0.2.0-rc.7，单独完成发布与远程验收。
 
 ## 精简规则与验证结论
 
@@ -52,7 +52,7 @@
 
 各库详细生产审查清单、最小验证命令和遗留边界保留在其本轮 audit。根会话串行完成 Gradle 定向测试、Node/Swift 原生边界检查与受影响平台编译。media 的固定微任务等待和 system-actions 的 URI 编码断言已按实际契约修正后通过；live-sdk Kuikly iOS 首次缺失 Render C 符号，链接真实 arm64 Simulator Render 静态 Framework 后两项测试通过，最低 iOS 15 的 SDK 与运行器边界写入组件开发文档。2 项 App-hosted Keychain 测试保持显式跳过，未算为通过。6 个 Maven 修复版本已完成不可变发布与干净远程消费，WebView独立iOS Git Pod0.2.0-rc.7也已完成真实远程消费与UIKit App最终链接。源码静态检查、单元/harness 测试、Native 编译链接、不可变远程产物消费、真实设备与业务验收分别记录。真实通知、禅道写入、HUKS/Keychain 与厂商业务操作没有被 mock 结果代替。
 
-## 本轮不可变发布
+## 初轮不可变发布
 
 以下 6 个修复版本已发布；Git 标签、JitPack 最终 public/tag/commit 与 Release 归档重新下载 SHA 均一致。68 个 publications 的 153 个变体逐项核验了真实文件大小、四种声明哈希、POM 许可证、内部依赖及 available-at 目标。公开 MD5/SHA-1 的 136 个 sidecar 均通过；SHA-256/SHA-512 的 136 个 sidecar 返回 HTTP 404，作为渠道缺失记录，未记为通过。jverification/diagnostics 的 JitPack 顶层 component.url 被改写到 404 地址；实际变体与 available-at 正常，干净消费验证单独记录。
 
@@ -74,3 +74,17 @@ customer-service Git Pod 0.1.4、live-sdk Git Pod 0.2.1-rc.6 从真实远程标�
 宿主真机日志 `0 does not represent a Boolean → WebViewWire.boolean → decodeEvent → GYWebViewEvent.onEvent` 暴露了本轮最初未捕获的 Native 生产者编码缺陷。Objective-C 的逻辑/比较表达式被装箱为NSNumber int，JSON生成0/1；事件、命令及规则字段改为显式@YES/@NO，保持严格解析。原生安全开关拒绝数字伪布尔；新 UIApplication Simulator App直接编译生产GYWebView.m，链接真实Render，检查实际JSON往返/CFBoolean、输入类型、导航和命令。真实WKContentRuleList编译还发现原有host规则使用不支持的disjunction；依照 [WebKit正则子集](https://webkit.org/blog/3476/content-blockers-first-look/) 改为可选路径及末尾锚点并验证host/port/path和相似域名边界，真实WebKit四类规则编译通过。新增Kotlin事件布尔类型Android/iOS回归通过，未用放宽解析或吞异常代替修复。14库布尔生产者另作只读专项复核，未发现同类C表达式出现在其他组件。
 
 WebView独立Native验收：真实GitPod0.2.0-rc.7、标签提交`21453637194fb5551f375a0811e80be7f0cebed4`、重新下载源码归档SHA-256`fa0faab8db41747f9818d05405268c78188fd075093add5d9edc76e0232c2604`，安装的.h/.m/.inc与实际ObjC编译输入逐字节一致，纯UIKit iphoneos arm64 App最终链接通过。Maven0.2.0-rc.6与HAR0.2.0-rc.5配套不变；没有Maven/HAR rc7产物。宿主升级与原机异常/页面性能复验已经委派“鸿蒙生产接入”会话，本记录不把尚未回传的宿主结果写成通过。
+
+
+## CMP / Kuikly 与鸿蒙追加修复
+
+2026-10-05 追加审查仅修改远程组件，宿主问题由“鸿蒙生产接入”会话处理。sound iOS 自动 Main 入口；WebView Android/鸿蒙隐藏初始化、每文档一次、隐藏消息清理、乱序 visibility 和导航恢复握手已实现、独立复审并发布。没有引入跨库框架、恢复 reload 或放宽原生来源/生命周期权限门禁。初轮 547/2 执行统计保留为阶段结果；本次实际执行 sound iOS12/Android8、Web Android3，均无失败或跳过，OHOS production ETS/JS harness另计。
+
+| 当前 Release / 验收记录 | Maven / 独立原生配套 | 验收结果 |
+| --- | --- | --- |
+| [sound 0.1.3](https://github.com/gycrosskit/sound/releases/tag/0.1.3) · [详细记录](https://github.com/gycrosskit/sound/blob/main/docs/0.1.3远程发布验收.md) | Maven `0.1.3`；未改 OHOS HAR `0.1.0` | 8 个 publication/8 个制品；干净 Android/iOS/OHOS 编译与 Simulator Framework 链接通过 |
+| [WebView rc.8](https://github.com/gycrosskit/compose-webview/releases/tag/0.2.0-rc.8) · [详细记录](https://github.com/gycrosskit/compose-webview/blob/main/docs/0.2.0-rc.8远程发布验收.md) | Maven/HAR `rc.8`；未改 iOS Native Pod `rc.7`；system-actions HAR `rc.3` | 17 个 publication/17 个制品；Kuikly Android APK、iOS device/simulator Framework、OHOS .so，以及 CMP Android APK/iOS 编译与 simulator Framework 通过 |
+
+两库不可变标签、JitPack最终public/tag/commit、Release归档重下载SHA一致。25个制品大小、四种声明hash、ZIP CRC、POM许可证、available-at及内部精确依赖通过；50个制品MD5/SHA-1 sidecar通过，50个SHA-256/SHA-512 sidecar HTTP404仅记录为渠道缺失。sound生成的顶层component.url仍指向缺失的sound根坐标（本次HTTP404），实际平台variant/available-at和干净消费正常；不建立伪坐标掩盖渠道行为。
+
+Web rc.8 Release HAR重下载、实际HAR production harness及新目录ArkTS消费者通过；Web与宿主直接依赖仅一份system-actions rc.3 owner。Web rc.8 OHPM接受closure-rc8审核，精确查询仍NOTFOUND；配套system-actions-native rc.3本轮已published且从Registry实际安装，组织首页同步纠正其状态。Release文件消费不能代替Web Registry安装。宿主接入已交接，真实设备业务验收由用户完成；本轮缺陷不作为signal9的已证实归因。
