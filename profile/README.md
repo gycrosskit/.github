@@ -47,14 +47,14 @@ Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上�
 
 | 仓库 | 用途 | 平台 | Maven 版本 | 独立原生渠道 |
 | --- | --- | --- | --- | --- |
-| [compose-webview](https://github.com/gycrosskit/compose-webview) | 网页、导航、JSBridge 与两类数据清理 | CMP：Android/iOS；Kuikly：三端 | [0.2.0-rc.6](https://github.com/gycrosskit/compose-webview/releases/tag/0.2.0-rc.6) | Git Pod **0.2.0-rc.7**；HAR **[0.2.0-rc.5](https://github.com/gycrosskit/compose-webview/releases/tag/0.2.0-rc.5)**（Registry 审核中），必须配套 system-actions HAR **0.2.0-rc.3** |
+| [compose-webview](https://github.com/gycrosskit/compose-webview) | 网页、导航、JSBridge 与两类数据清理 | CMP：Android/iOS；Kuikly：三端 | [0.2.0-rc.8](https://github.com/gycrosskit/compose-webview/releases/tag/0.2.0-rc.8) | Git Pod **0.2.0-rc.7**；HAR **[0.2.0-rc.8](https://github.com/gycrosskit/compose-webview/releases/tag/0.2.0-rc.8)**（Registry 审核中；Release HAR 消费通过），必须配套 system-actions HAR **0.2.0-rc.3** |
 | [permission](https://github.com/gycrosskit/permission) | 权限请求与历史状态 | 三端 | [0.1.3](https://github.com/gycrosskit/permission/releases/tag/0.1.3) | HAR **0.1.2 审核中**；iOS KMP 原生实现 |
 | [media](https://github.com/gycrosskit/media) | 选图、拍照、压缩、保存相册与 Kuikly 传输桥 | 三端 | [0.1.2](https://github.com/gycrosskit/media/releases/tag/0.1.2) | Swift Package **0.1.2**；HAR **[0.1.3](https://github.com/gycrosskit/media/releases/tag/0.1.3)**（Registry 审核中；Maven 仍为 0.1.2） |
 | [scanner](https://github.com/gycrosskit/scanner) | 二维码解码与原生扫码 | 三端 | [0.1.4](https://github.com/gycrosskit/scanner/releases/tag/0.1.4) | Swift Package **0.1.3**；HAR **0.1.3 审核中** |
 | [toast](https://github.com/gycrosskit/toast) | 原生短消息与 Kuikly 消息桥 | 三端 | [0.1.3](https://github.com/gycrosskit/toast/releases/tag/0.1.3) | Swift Package / Git Pod **0.1.3**；HAR **0.1.3 审核中** |
 | [location](https://github.com/gycrosskit/location) | 位置请求、取消与 Kuikly 请求桥 | 三端 | [0.1.2](https://github.com/gycrosskit/location/releases/tag/0.1.2) | HAR **0.1.1 审核中**；iOS KMP 原生实现 |
-| [system-actions](https://github.com/gycrosskit/system-actions) | 系统设置、分享、UIKit 与窗口策略 | 三端 | [0.2.0-rc.3](https://github.com/gycrosskit/system-actions/releases/tag/0.2.0-rc.3) | Git Pod / Swift Package **0.2.0-rc.2**；HAR **[0.2.0-rc.3](https://github.com/gycrosskit/system-actions/releases/tag/0.2.0-rc.3)**（Registry 审核中） |
-| [sound](https://github.com/gycrosskit/sound) | 音频准备、播放与事件 | 三端 | [0.1.1](https://github.com/gycrosskit/sound/releases/tag/0.1.1) | iOS KMP 原生实现；HAR **0.1.0** |
+| [system-actions](https://github.com/gycrosskit/system-actions) | 系统设置、分享、UIKit 与窗口策略 | 三端 | [0.2.0-rc.3](https://github.com/gycrosskit/system-actions/releases/tag/0.2.0-rc.3) | Git Pod / Swift Package **0.2.0-rc.2**；HAR **[0.2.0-rc.3](https://github.com/gycrosskit/system-actions/releases/tag/0.2.0-rc.3)**（Registry 已上架，本轮查询与安装通过） |
+| [sound](https://github.com/gycrosskit/sound) | 音频准备、播放与事件 | 三端 | [0.1.3](https://github.com/gycrosskit/sound/releases/tag/0.1.3) | Android/iOS 自动 Main 入口；HAR **0.1.0** |
 
 
 “三端”指 Android、iOS 与 HarmonyOS / OpenHarmony，各平台入口和能力以仓库说明为准。HAR 的完整包名、最低系统要求、权限与释放规则请查对应 README；库版本相同也不代表 API 和设备行为完全一致。
