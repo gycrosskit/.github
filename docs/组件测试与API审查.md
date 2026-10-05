@@ -1,5 +1,43 @@
 # 组件测试与 API 审查
 
+## 完整复审与当前收尾状态
+
+2026-10-05 再次按各仓库的完整文件清单读取全部自有生产实现、公开入口、平台桥、相关调用者和最终 diff，重点覆盖线程、owner、取消、迟到回执、错误分类、三端契约、资源释放与最低系统。逐文件 SHA 和回归日志保留在各库忽略的 `build/full-review/`；公开文档列出实际文件范围与验证结果。第三方 SDK 内部、生成代码和宿主业务不混入“自有源码全部审查”的承诺。
+
+本轮的“完成”要求是：确定缺陷修复、公开契约及平台限制写清、受影响回归实际通过、产物与源代码一致、不可变发布、各实际消费渠道复验，再交给宿主接入。源码阅读或本地 staging 编译不是远程消费通过。本轮所有自有组件的确定、可修复缺陷均已修复并完成相应发布与真实远程消费；各渠道的实际范围见下表，历史阶段记录保留在后文。
+
+| 组件 / 完整审查 | 本轮改动与版本 | 当前验证范围 |
+| --- | --- | --- |
+| [permission](https://github.com/gycrosskit/permission/blob/main/docs/完整源码审查.md) | Maven/HAR `0.1.5`：原生公开类型导出；只有成功启动的请求更新历史；注册/启动异常不冒充拒权 | 已发布，真实 Release HAR 新建消费通过；新建 Maven Android/iOS/OHOS 编译及 Simulator Framework 链接通过 |
+| [media](https://github.com/gycrosskit/media/blob/main/docs/完整源码审查.md) | Maven/HAR `0.1.5`、Swift revision `native-0.1.3`：相机临时文件独占；启动失败清理；保存拒绝截断图片；maxCount 合同统一 | 已发布，新建 Maven Android/iOS/OHOS 编译及 Simulator Framework 链接、真实 Release HAR、远程 Swift 包 device/simulator 与 UIKit 回归通过；远程 Core Framework 与真实 Swift SDK 的完整 KmpMediaBridge typecheck 通过 |
+| [scanner](https://github.com/gycrosskit/scanner/blob/main/docs/完整源码审查.md) | 没有新确定运行缺陷，保留 Maven `0.1.5`、HAR `0.1.3`、Swift `0.1.1` | 本轮逐文件复审与 Node 原生回归；不以文档变更触发二进制发布 |
+| [location](https://github.com/gycrosskit/location/blob/main/docs/完整源码审查.md) | Maven/HAR `0.1.3`：iOS Restricted 正确归类；OHOS 拒绝负时间戳 | 已发布，真实 Release HAR 新建消费通过；新建 Maven Android/JVM/iOS/OHOS 编译及 Simulator Framework 链接通过 |
+| [system-actions](https://github.com/gycrosskit/system-actions/blob/main/docs/完整源码审查.md) | Maven/HAR `0.2.0-rc.4`：OHOS 剪贴板、私有文件分享及 keepScreenOn 接线；失败保留租约以便重试 | 已发布，真实 Release HAR 与新建 Maven Android/iOS/OHOS 编译及 Simulator Framework 链接通过；Swift 包沿用 `0.2.0-rc.2` |
+| [toast](https://github.com/gycrosskit/toast/blob/main/docs/完整源码审查.md) | 没有新确定运行缺陷，保留既有 `0.1.3` 配套 | 本轮逐文件复审与 Node 原生回归；未重跑未变化的 Kotlin/Swift/HAR 构建 |
+| [sound](https://github.com/gycrosskit/sound/blob/main/docs/完整源码审查.md) | 没有新确定运行缺陷，保留 Maven `0.1.3`、HAR `0.1.0` | 本轮逐文件复审与 Node 原生回归；未重跑未变化的 Kotlin/Swift/HAR 构建 |
+| [wechat](https://github.com/gycrosskit/wechat/blob/main/docs/完整源码审查.md) | Swift/Git Pod `native-0.1.4`：errCode=0 的空白 OAuth code 仍为失败，合法原文保留；Maven `0.1.5`、HAR `0.1.4` 不变 | 真实 Git Pod/UIKit App 与 SPM/device 编译通过；新建远程 Maven Core Framework + 实际 Native Framework 的完整 KmpWechatBridge typecheck 通过 |
+| [jverification](https://github.com/gycrosskit/jverification/blob/main/docs/完整源码审查.md) | Maven/Git Pod `0.1.3`：6000 成功码但纯空白 token 正确失败；HAR `0.1.0` 不变 | 已发布，新建 Maven Android/JVM/iOS/OHOS 编译与 Simulator/device Framework 链接通过；真实 Git Pod/UIKit App及新远程 KMP/Swift 桥通过 |
+| [customer-service](https://github.com/gycrosskit/customer-service/blob/main/verification/完整源码审查.md) | Maven/Git Pod `0.1.5`：syncProfile 资料同步回调后复核 owner、serial、实际身份与已知 AppId，拒绝 reset/外部接管后的旧成功 | 已发布，新建 Maven Android/iOS 编译与 Simulator Framework 链接通过；真实 Git Pod/UIKit App 通过 |
+| [live-sdk](https://github.com/gycrosskit/live-sdk/blob/main/docs/完整源码审查.md) | Maven/Git Pod `0.2.1-rc.7`：Kuikly PiP 接线；实验 API 受理不冒充浮窗实际可见；切房清除旧 View 事件 | 已发布，新建 Kuikly/CMP APK、iOS device/simulator Framework 通过；真实 Git Pod/UIKit App、远程 KMP Framework+Render/View 最终链接通过 |
+| [compose-webview](https://github.com/gycrosskit/compose-webview/blob/main/docs/完整源码审查.md) | Maven/HAR/Pod `0.2.0-rc.9`：文档/owner/可见性统一门禁、来源规范化、控制上传与资源撤销、组合导航规则；新增 Kuikly 全屏原生宿主 controls/方向参数及保留 DOM 的导航更新接线 | 已发布，82项 Android/77项 iOS 与真正 UIKit App 回归通过；新建远程 Kuikly/CMP APK、iOS Framework、OHOS .so、真实 Git Pod/UIKit App 与 Release HAR 消费全部通过。配套 system-actions HAR `0.2.0-rc.4` |
+| [diagnostics](https://github.com/gycrosskit/diagnostics/blob/main/docs/完整审查.md) | Maven `0.2.0-rc.5`：OHOS Curl 通知闭环、RFC HMAC、HTTP 字节上限与严格 errcode、负快照大小拒绝 | 已发布，core/通知 Android/JVM/iOS 回归通过；新建远程消费者 Android/JVM、iOS Framework及core+通知 OHOS 最终 `.so` 通过。原生 Swift `rc.1` 不变 |
+| [debug-tools](https://github.com/gycrosskit/debug-tools/blob/main/docs/完整审查.md) | Maven/HAR `0.2.0-rc.3`：初始化与命令隔离；初始恢复期间打开表单仍采集证据；原生严格 JSON 类型/键校验 | 已发布，新建 Maven Android/iOS/OHOS 编译及 Simulator Framework、真实 Release HAR 新建消费通过；Keychain 两项仍明确跳过 |
+
+所有已发布变更的 Release 资产重新下载校验 SHA；Maven 每个 publication、实际 variant 文件、四种声明 hash、ZIP CRC、POM 身份/许可证及内部版本均逐项核验，并与冻结归档实际字节比较。公开 MD5/SHA-1 sidecar 通过；SHA-256/SHA-512 sidecar 的 HTTP404 仍是渠道缺失，不记为通过。新 HAR 的 OHPM 提交接受仅表示审核中：permission/media/location/system-actions/debug-tools/compose-webview 精确 Registry 安装本轮仍 NOTFOUND，实际安装验证使用同标签公开 Release HAR。
+
+### 尚有外部契约限制
+
+- **Live OHOS**：[腾讯鸿蒙直播 SDK 调研](https://github.com/gycrosskit/live-sdk/blob/main/docs/腾讯鸿蒙直播SDK调研.md)。公开 AtomicX/Room/IM 能力没有证明等价 LiveId、直播列表、直播 View 与互动协议；不能以聊天室或普通音视频 SDK 填空成功。Android/iOS 的真实音视频、账号与 PiP 仍需设备验收。
+- **客服 OHOS**：[腾讯客服鸿蒙接入核查](https://github.com/gycrosskit/customer-service/blob/main/verification/腾讯客服鸿蒙接入核查.md)。腾讯 AI Desk uni-app 有鸿蒙支持，但当前原生 ArkUI/Kuikly 等价 HAR、初始化/身份/聊天/重置与企业配置契约未获取并验证；不能写成“腾讯没有鸿蒙客服”。
+- **WebView 受控上传**：iOS 公开 WKUIDelegate 拦截从 18.4 才可用；普通网页仍支持 iOS15，15～18.3 的受控上传明确 Unsupported。UIKit MOV 不假装 MP4；DOM 提示不作为安全证明。OHOS fileSelector 不提供真实 frame/gesture 信息，文档中保留该平台边界。
+- **图片保存**：API28+ 使用严格 ImageDecoder；API24～27、Swift 与 HAR 在真实小图解码前检查 PNG/JPEG/WebP 容器结束边界。它不是完整格式解析器，不能声称校验了所有压缩数据/CRC。
+- **signal 9**：串行构建通过没有证明历史 signal9 的根因；保留“尚未明确归因”，不把本轮修复或内存压力推测写成结论。
+- **Kuikly 官方 SDK 字体/语义**：[本轮上游核查](KuiklySDK上游核查.md)。不属于14个自有组件。官方 `2.28.0-2.0.21-ohos` 与核查主分支 `18252bca15c4215fb5c9a7e92013043aa3f903ba` 仍缺输入 fontFamily 连续接线；[PR #1419](https://github.com/Tencent-TDS/KuiklyUI/pull/1419) 已关闭且未合并，不能声称升级现成版本即可解决。真实官方 AAR 调用生产 `KuiklySemantisHandler.buildAccessibilityText` 输出 `English option, 已选择`；[源码](https://github.com/Tencent-TDS/KuiklyUI/blob/18252bca15c4215fb5c9a7e92013043aa3f903ba/compose/src/commonMain/kotlin/com/tencent/kuikly/compose/extension/KuiklySemantisHandler.kt) 还缺 Switch/Radio 与选中/禁用/错误的完整结构化桥接。已准备英文上游报告与最小复现，未将未编译建议或设备读屏列为修复/验收；不在业务组件重写输入控件或创建平行 SDK fork。
+
+此轮回归曾捕获真实截断图片被 BitmapFactory/UIImage 接受，以及 WebView 旧回调、IPv6/DNS/脚本端口边界；失败日志与修复后结果均保留。完整复审应减少已知遗漏，但不承诺以后再审查必定零发现；设备、厂商服务和新的使用场景仍有独立验收范围。
+
+## 历史阶段记录
+
 审查日期：2026-10-05。范围为下表 14 个功能组件，依据各库本轮 `build/test-api-review/audit.md` 汇总。团队逐文件阅读自有生产源码、原生桥、现有测试和相关调用者，并补充关键契约回归；完整阅读不等于 100% 行为覆盖，也不代表所有平台已有动态测试。
 
 **初轮源码验证：14 库定向测试与受影响平台编译完成；当前 Gradle XML 共 549 次测试执行，547 次通过、2 次 App-hosted Keychain 显式跳过、0 失败。** 同一测试在不同平台执行会重复计数，Node/Swift/Python 行为检查另行核验，不混作唯一测试数量。 下表记录已有测试行为与新增回归。Gradle XML、Node/Swift 行为检查及 Native 链接分别核验，不把测试代码存在视为通过。组件源码与测试链接指向公开仓库 `main` 的入口，具体本轮变更以合并后的源码为准。
