@@ -10,6 +10,8 @@
 - [`templates/jitpack-metadata.py`](templates/jitpack-metadata.py)：compose-webview、live-sdk、toast、debug-tools、customer-service 共用的 KMP 元数据修正脚本模板。
 - [`templates/check-maven.py`](templates/check-maven.py)：校验完整 publication、POM 许可证、Native 变体、实际文件及四种哈希和 sidecar。
 - [`scripts/test-check-maven.py`](scripts/test-check-maven.py)：发布校验的正向与失败场景回归。
+- [持续集成门禁](docs/持续集成门禁.md)：14 个功能组件的源码、冻结产物和独立远程消费者回归边界。
+- [`templates/check-public-maven.py`](templates/check-public-maven.py)：实际 JitPack 标签、POM/GMM、variant 字节摘要及公开 sidecar 校验；[最小自检](scripts/test-check-public-maven.py)。
 - [`scripts/protect-main.sh`](scripts/protect-main.sh)：为新建的公开仓库配置 `main` 分支保护；规则定义在 [`templates/main-protection.json`](templates/main-protection.json)。
 - [`profile/README.md`](profile/README.md)：GitHub 组织主页内容。
 
