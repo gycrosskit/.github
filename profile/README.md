@@ -71,7 +71,7 @@ Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上�
 | 仓库 | 用途 | 平台 | Maven 版本 | 独立原生渠道与状态 |
 | --- | --- | --- | --- | --- |
 | [customer-service](https://github.com/gycrosskit/customer-service) | 腾讯 AI Desk 客服原生适配与 SDK 身份归属 | Android、iOS | [0.1.5](https://github.com/gycrosskit/customer-service/releases/tag/0.1.5) | Git Pod **0.1.5**；OHOS 原生 HAR/企业接入契约待确认，不能将 uni-app 支持当作此库实现 |
-| [live-sdk](https://github.com/gycrosskit/live-sdk) | 腾讯 AtomicX 直播、预览、中立 IM 与 SDK 身份归属 | Android、iOS | [0.2.1-rc.7](https://github.com/gycrosskit/live-sdk/releases/tag/0.2.1-rc.7) | Git Pod **0.2.1-rc.7**；宿主映射业务事件与账号准入；公开 OHOS SDK 尚不满足等价直播契约 |
+| [live-sdk](https://github.com/gycrosskit/live-sdk) | 腾讯 AtomicX 直播、预览、中立 IM 与 SDK 身份归属 | Android、iOS | [0.2.1-rc.8](https://github.com/gycrosskit/live-sdk/releases/tag/0.2.1-rc.8) | Android Kuikly FRAME 布局修复；Git Pod 保持 **0.2.1-rc.7**；宿主映射业务事件与账号准入；公开 OHOS SDK 尚不满足等价直播契约 |
 | [jverification](https://github.com/gycrosskit/jverification) | 极光一键登录与授权页事件 | 三端 | [0.1.3](https://github.com/gycrosskit/jverification/releases/tag/0.1.3) | Git Pod **0.1.3**；HAR **0.1.0**（沿用已有原生版本） |
 | [wechat](https://github.com/gycrosskit/wechat) | 微信授权、分享、转账确认页与请求恢复存储 | 三端 | [0.1.5](https://github.com/gycrosskit/wechat/releases/tag/0.1.5) | Swift Package revision / Git Pod tag **[native-0.1.4](https://github.com/gycrosskit/wechat/releases/tag/native-0.1.4)**（podspec 内部 `0.1.4`）；HAR **0.1.4**（沿用审核与 Release 验收记录） |
 
