@@ -47,7 +47,7 @@ Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上�
 
 | 仓库 | 用途 | 平台 | Maven 版本 | 独立原生渠道 |
 | --- | --- | --- | --- | --- |
-| [compose-webview](https://github.com/gycrosskit/compose-webview) | 网页、导航、JSBridge 与两类数据清理 | CMP：Android/iOS；Kuikly：三端 | [0.2.0-rc.9](https://github.com/gycrosskit/compose-webview/releases/tag/0.2.0-rc.9) | Git Pod / HAR **0.2.0-rc.9**（HAR 审核中；真实 Release HAR 新建消费通过）；必须配套 system-actions HAR **0.2.0-rc.4** |
+| [compose-webview](https://github.com/gycrosskit/compose-webview) | 网页、导航、JSBridge 与三端资源缓存/网站数据清理 | CMP：Android/iOS；Kuikly：三端 | [0.2.0-rc.10](https://github.com/gycrosskit/compose-webview/releases/tag/0.2.0-rc.10) | Git Pod 保持 **0.2.0-rc.9**；HAR **0.2.0-rc.10** 新增鸿蒙清理 API（OHPM 审核中；公开 Release HAR 与 Maven 三端独立消费通过）；必须配套 system-actions HAR **0.2.0-rc.4** |
 | [permission](https://github.com/gycrosskit/permission) | 权限请求与历史状态 | 三端 | [0.1.5](https://github.com/gycrosskit/permission/releases/tag/0.1.5) | HAR **0.1.5**（审核中；Release HAR 新建消费通过）；iOS KMP 原生实现 |
 | [media](https://github.com/gycrosskit/media) | 选图、拍照、压缩、保存相册与 Kuikly 传输桥 | 三端 | [0.1.5](https://github.com/gycrosskit/media/releases/tag/0.1.5) | Swift Package revision **[native-0.1.3](https://github.com/gycrosskit/media/releases/tag/native-0.1.3)**；HAR **0.1.5**（审核中；Release HAR 新建消费通过） |
 | [scanner](https://github.com/gycrosskit/scanner) | 二维码解码与原生扫码 | 三端 | [0.1.5](https://github.com/gycrosskit/scanner/releases/tag/0.1.5) | Swift Package **0.1.1**；HAR **0.1.3**（沿用已有原生版本与验收记录） |
@@ -71,7 +71,7 @@ Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上�
 | 仓库 | 用途 | 平台 | Maven 版本 | 独立原生渠道与状态 |
 | --- | --- | --- | --- | --- |
 | [customer-service](https://github.com/gycrosskit/customer-service) | 腾讯 AI Desk 客服原生适配与 SDK 身份归属 | Android、iOS | [0.1.5](https://github.com/gycrosskit/customer-service/releases/tag/0.1.5) | Git Pod **0.1.5**；OHOS 原生 HAR/企业接入契约待确认，不能将 uni-app 支持当作此库实现 |
-| [live-sdk](https://github.com/gycrosskit/live-sdk) | 腾讯 AtomicX 直播、预览、中立 IM 与 SDK 身份归属 | Android、iOS | [0.2.1-rc.9](https://github.com/gycrosskit/live-sdk/releases/tag/0.2.1-rc.9) | Android Kuikly 快照订阅与 FRAME 布局修复；Git Pod 保持 **0.2.1-rc.7**；宿主映射业务事件与账号准入；公开 OHOS SDK 尚不满足等价直播契约 |
+| [live-sdk](https://github.com/gycrosskit/live-sdk) | 腾讯 AtomicX 直播、预览、中立 IM、SDK 身份归属与兼容表情协议 | 直播：Android、iOS；core 中立协议：三端 | [0.2.1-rc.10](https://github.com/gycrosskit/live-sdk/releases/tag/0.2.1-rc.10) | `live-core` 新增 62 项兼容表情映射与 OHOS 中立 KLIB；CMP/Kuikly 与 OHOS core 公开独立消费通过；Git Pod 保持 **0.2.1-rc.7**；OHOS KLIB 不提供直播、IM 原生运行时或 PiP |
 | [jverification](https://github.com/gycrosskit/jverification) | 极光一键登录与授权页事件 | 三端 | [0.1.3](https://github.com/gycrosskit/jverification/releases/tag/0.1.3) | Git Pod **0.1.3**；HAR **0.1.0**（沿用已有原生版本） |
 | [wechat](https://github.com/gycrosskit/wechat) | 微信授权、分享、转账确认页与请求恢复存储 | 三端 | [0.1.5](https://github.com/gycrosskit/wechat/releases/tag/0.1.5) | Swift Package revision / Git Pod tag **[native-0.1.4](https://github.com/gycrosskit/wechat/releases/tag/native-0.1.4)**（podspec 内部 `0.1.4`）；HAR **0.1.4**（沿用审核与 Release 验收记录） |
 
