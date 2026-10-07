@@ -63,7 +63,7 @@ Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上�
 
 | 仓库 | 用途 | 平台 | Maven 版本 | 接入边界 |
 | --- | --- | --- | --- | --- |
-| [diagnostics](https://github.com/gycrosskit/diagnostics) | 系统采集、私有文件、日志与有界网络诊断 | 三端、JVM | [0.2.0-rc.7](https://github.com/gycrosskit/diagnostics/releases/tag/0.2.0-rc.7) | 可选 Ktor 三端/JVM、OkHttp Android/JVM 采集；Git Pod / Swift Package **0.2.0-rc.1**；宿主供准入、脱敏、上传与凭据，无 HAR |
+| [diagnostics](https://github.com/gycrosskit/diagnostics) | 系统采集、私有文件、日志与有界网络诊断 | 三端、JVM | [0.2.0-rc.8](https://github.com/gycrosskit/diagnostics/releases/tag/0.2.0-rc.8) | 可选 Ktor 三端/JVM、OkHttp Android/JVM 采集；Header/Body 处理、正文开关和 1..32 KiB 额度由使用方配置，默认保留安全规则；Git Pod / Swift Package **0.2.0-rc.1**；宿主供准入、脱敏、上传与凭据，无 HAR |
 | [debug-tools](https://github.com/gycrosskit/debug-tools) | Bug 协议、安全存储与摇动 | Android、iOS、OHOS | [0.2.0-rc.3](https://github.com/gycrosskit/debug-tools/releases/tag/0.2.0-rc.3) | Kuikly OHOS 配套 HAR **0.2.0-rc.3**（审核中；Release HAR 新建消费通过）；宿主供 UI、品牌、凭据与准入 |
 
 ## 厂商 SDK 集成
