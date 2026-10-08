@@ -21,3 +21,4 @@ jobs:
           python3 scripts/test-jitpack-metadata.py
           python3 scripts/test-check-public-maven.py
           python3 scripts/test-ci-helpers.py
+          python3 scripts/test-ci-native-cache.py

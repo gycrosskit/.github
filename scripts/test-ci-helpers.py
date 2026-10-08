@@ -29,6 +29,10 @@ def main():
     assert not changes.source_needed('release', {})
     assert changes.source_needed('workflow_dispatch', {'inputs': {}})
     assert not changes.source_needed('workflow_dispatch', {'inputs': {'version': '0.1.0'}})
+    for value in (True, 'true'):
+        assert not changes.source_needed('workflow_dispatch', {'inputs': {'warm_native_cache': value}})
+    for value in (False, 'false'):
+        assert changes.source_needed('workflow_dispatch', {'inputs': {'warm_native_cache': value}})
     assert changes.source_needed('unknown', {})
     progress = runner.Downloads()
     line = 'Downloading dependency for Kotlin Native: https://example.test/llvm.tar.gz (%d/100).'
@@ -45,6 +49,20 @@ def main():
 
     with tempfile.TemporaryDirectory() as temporary:
         directory = Path(temporary)
+        previous = Path.cwd()
+        try:
+            os.chdir(directory)
+            module = directory / 'ohos/example-native'
+            module.mkdir(parents=True)
+            (module / 'oh-package.json5').write_text('{}')
+            for name in ('README.md', 'CHANGELOG.md'):
+                assert not changes.source_needed('pull_request', {}, [f'ohos/example-native/{name}'])
+            for path in ('ohos/unknown/README.md', 'ohos/example-native/test/README.md',
+                         'ohos/example-native/oh-package.json5', 'ohos/example-native/src/Main.ets'):
+                assert changes.source_needed('pull_request', {}, [path]), path
+            assert changes.source_needed('pull_request', {}, ['ohos/example-native/README.md', 'new.kt'])
+        finally:
+            os.chdir(previous)
         wrapper = ROOT / 'templates/ci-run.py'
         def execute(name, source, timeout=0.3):
             log = directory / (name + '.log')
@@ -101,6 +119,13 @@ while True: time.sleep(1)
         result = subprocess.run([sys.executable, str(ROOT / 'templates/ci-changes.py')], cwd=directory,
                                 env=environment, capture_output=True, text=True, check=True)
         assert result.stdout == 'source=false\n' and output.read_text() == 'source=false\n'
+        for ref, inputs in [('refs/heads/feature', {'warm_native_cache': True}),
+                            ('refs/heads/main', {'warm_native_cache': True, 'version': '1.0.0'})]:
+            event.write_text(json.dumps({'inputs': inputs}))
+            environment.update(GITHUB_EVENT_NAME='workflow_dispatch', GITHUB_REF=ref)
+            result = subprocess.run([sys.executable, str(ROOT / 'templates/ci-changes.py')], cwd=directory,
+                                    env=environment, capture_output=True, text=True)
+            assert result.returncode != 0 and 'requires main' in result.stderr
     print('CI helpers: scope/Git diff/exit propagation/quiet compile/download stall checks passed')
 
 
