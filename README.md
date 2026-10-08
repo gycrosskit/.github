@@ -3,6 +3,7 @@
 本仓库保存组织主页、跨仓库发布规则和共用脚本模板。
 
 - [`AGENTS.md`](AGENTS.md)：AI 工作入口，按任务指向[组件开发](docs/组件开发.md)、[Git Flow 与提交规范](docs/GitFlow与提交规范.md)和[发布流程](docs/发布流程.md)。
+- [组件文档索引](docs/组件文档索引.md)：17 个组件库的功能入口、文档分工和 core / CMP / Kuikly / 平台差异维护规则。
 - [`templates/jitpack-metadata.py`](templates/jitpack-metadata.py)：compose-webview、live-sdk、toast 三个仓库共用的 KMP 元数据修正脚本模板。
 - [`scripts/protect-main.sh`](scripts/protect-main.sh)：为新建的公开仓库配置 `main` 分支保护；规则定义在 [`templates/main-protection.json`](templates/main-protection.json)。
 - [`profile/README.md`](profile/README.md)：GitHub 组织主页内容。
