@@ -3,6 +3,7 @@
 本仓库是跨项目规则和脚本的版本源；本地 `/Users/guoyang/gycrosskit/AGENTS.md` 链接到此文件。进入具体仓库后，先读其源码、构建配置和更具体的 `AGENTS.md`，再按任务读取对应文档：
 
 - [组件开发](docs/组件开发.md)：平台边界、公共 API、验证与中文 README。
+- [组件评审技能](skills/gycrosskit-component-review/SKILL.md)：专项全库审查、定向变更评审和修复复审；按公开能力与实际调用链分两轮检查行为及精简。
 - [Git Flow 与提交规范](docs/GitFlow与提交规范.md)：分支、提交、PR 和主分支保护。
 - [发布流程](docs/发布流程.md)：JitPack、Release 归档、ohpm 与远程消费验证。
 - [组件抽离路线图](docs/组件抽离路线图.md)：拟建组件、边界和实施顺序。

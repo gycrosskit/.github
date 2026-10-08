@@ -4,8 +4,10 @@ import hashlib
 import importlib.util
 import io
 import json
+import ssl
 import tempfile
 import urllib.error
+from unittest.mock import patch
 import zipfile
 from pathlib import Path
 
@@ -75,6 +77,87 @@ def main():
         responses[base + item['name'] + '.sha1'] = b'0' * 40
         rejects(lambda: checker.audit(repo, version, commit, [module], Path(directory) / 'bad-digest', fetch=fetch))
         assert not (Path(directory) / 'bad-digest' / 'proof.json').exists()
+        failed_state = dict(state, isTag=False)
+        responses[next(url for url in responses if '/api/builds/' in url)] = json.dumps(failed_state).encode()
+        failed = Path(directory) / 'bad-state'
+        rejects(lambda: checker.audit(repo, version, commit, [module], failed, fetch=fetch))
+        assert json.loads((failed / 'jitpack-state-001.json').read_text()) == failed_state
+        assert not (failed / 'proof.json').exists()
+
+    class Response(io.BytesIO):
+        def __init__(self, content, length=None):
+            super().__init__(content)
+            self.headers = {'Content-Length': str(len(content) if length is None else length)}
+
+    transient = urllib.error.HTTPError('https://example.test', 503, 'Unavailable', {}, None)
+    with patch.object(checker.urllib.request, 'urlopen', side_effect=[transient, Response(b'ok')]) as opening, \
+            patch.object(checker.time, 'sleep'):
+        assert checker.get_bytes('https://example.test') == b'ok' and opening.call_count == 2
+    missing = urllib.error.HTTPError('https://example.test', 404, 'Missing', {}, None)
+    with patch.object(checker.urllib.request, 'urlopen', side_effect=missing) as opening:
+        try:
+            checker.get_bytes('https://example.test')
+            raise AssertionError('404 must fail')
+        except urllib.error.HTTPError:
+            assert opening.call_count == 1
+    with patch.object(checker.urllib.request, 'urlopen', side_effect=[Response(b'bad', 5), Response(b'valid')]) as opening, \
+            patch.object(checker.time, 'sleep'):
+        assert checker.get_bytes('https://example.test') == b'valid' and opening.call_count == 2
+    broken = Response(b'')
+    broken.read1 = lambda size: (_ for _ in ()).throw(ssl.SSLEOFError('EOF during body read'))
+    with patch.object(checker.urllib.request, 'urlopen', side_effect=[broken, Response(b'valid')]) as opening, \
+            patch.object(checker.time, 'sleep'):
+        assert checker.get_bytes('https://example.test') == b'valid' and opening.call_count == 2
+    for certificate in [ssl.SSLCertVerificationError('untrusted'), urllib.error.URLError(ssl.SSLCertVerificationError('untrusted'))]:
+        with patch.object(checker.urllib.request, 'urlopen', side_effect=certificate) as opening:
+            try:
+                checker.get_bytes('https://example.test')
+                raise AssertionError('Certificate failure must stop')
+            except (ssl.SSLCertVerificationError, urllib.error.URLError):
+                assert opening.call_count == 1
+
+    with tempfile.TemporaryDirectory() as temporary:
+        output = Path(temporary)
+        clock = [0]
+        def sleep(seconds):
+            clock[0] += seconds
+        states = iter([dict(state, status='building'), state])
+        with patch.object(checker.time, 'monotonic', side_effect=lambda: clock[0]), \
+                patch.object(checker.time, 'sleep', side_effect=sleep):
+            ready = checker.ready_state('https://example.test', version, commit, [module], output,
+                                        lambda url: json.dumps(next(states)).encode(), wait_seconds=2, poll_seconds=1)
+        assert ready == state and json.loads((output / 'jitpack-state-001.json').read_text())['status'] == 'building'
+        assert (output / 'jitpack-state-002.json').exists()
+    for bad in [dict(state, status='error'), dict(state, commit='b' * 40)]:
+        with tempfile.TemporaryDirectory() as temporary:
+            calls = []
+            def bad_fetch(url):
+                calls.append(url)
+                return json.dumps(bad).encode()
+            rejects(lambda: checker.ready_state('https://example.test', version, commit, [module], Path(temporary),
+                                                bad_fetch, wait_seconds=300))
+            assert len(calls) == 1
+    with tempfile.TemporaryDirectory() as temporary:
+        states = iter([dict(state, status='none'), state])
+        calls = []
+        def bootstrap_fetch(url):
+            calls.append(url)
+            return b'<project/>' if url.endswith('.pom') else json.dumps(next(states)).encode()
+        with patch.object(checker.time, 'sleep'):
+            assert checker.ready_state('https://example.test/state', version, commit, [module], Path(temporary),
+                                       bootstrap_fetch, wait_seconds=2, bootstrap_url='https://example.test/exact.pom') == state
+        assert calls == ['https://example.test/state', 'https://example.test/exact.pom', 'https://example.test/state']
+        assert json.loads((Path(temporary) / 'jitpack-trigger.json').read_text())['received_bytes'] == 10
+    with tempfile.TemporaryDirectory() as temporary:
+        clock, calls = [0], []
+        def waiting(url):
+            calls.append(url)
+            return json.dumps(dict(state, status='none')).encode()
+        with patch.object(checker.time, 'monotonic', side_effect=lambda: clock[0]), \
+                patch.object(checker.time, 'sleep', side_effect=lambda seconds: clock.__setitem__(0, clock[0] + seconds)):
+            rejects(lambda: checker.ready_state('https://example.test', version, commit, [module], Path(temporary),
+                                                waiting, wait_seconds=2, poll_seconds=1))
+        assert len(calls) == 3 and clock[0] == 2
     print('public Maven checker: state/identity/digest/ZIP CRC/mock HTTP/sidecar absence checks passed')
 
 

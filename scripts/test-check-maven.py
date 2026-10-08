@@ -9,6 +9,9 @@ import sys
 import zipfile
 import tempfile
 import unittest
+import contextlib
+import runpy
+from unittest.mock import patch
 
 GROUP = 'example.component'
 VERSION = '1.0.0'
@@ -39,6 +42,36 @@ def stage(root):
 
 
 class CheckerTest(unittest.TestCase):
+    def test_shared_artifact_digests_are_read_once_and_each_variant_is_checked(self):
+        checker = Path(__file__).resolve().parents[1] / 'templates/check-maven.py'
+        for conflict in (False, True):
+            with self.subTest(conflict=conflict), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                module = stage(root)
+                metadata = json.loads(module.read_text())
+                duplicate = copy.deepcopy(metadata['variants'][0])
+                duplicate['name'] = 'metadataRuntimeElements'
+                if conflict:
+                    duplicate['files'][0]['sha1'] = 'incorrect'
+                metadata['variants'].append(duplicate)
+                module.write_text(json.dumps(metadata)); checksums(module)
+                reads = {}
+                read_bytes = Path.read_bytes
+
+                def counted_read(path):
+                    reads[path] = reads.get(path, 0) + 1
+                    return read_bytes(path)
+
+                argv = [str(checker), str(root), GROUP, VERSION, 'demo', 'ios_arm64', '--jvm-only']
+                with patch.object(sys, 'argv', argv), patch.object(Path, 'read_bytes', counted_read), contextlib.redirect_stdout(io.StringIO()):
+                    if conflict:
+                        with self.assertRaises(AssertionError):
+                            runpy.run_path(str(checker), run_name='__main__')
+                    else:
+                        runpy.run_path(str(checker), run_name='__main__')
+                self.assertTrue(reads)
+                self.assertTrue(all(count == 1 for count in reads.values()), reads)
+
     def test_complete_and_damaged_publications(self):
         checker = Path(__file__).resolve().parents[1] / 'templates/check-maven.py'
         for damage in ('none', 'missing_declared_hash', 'wrong_artifact', 'missing_module_sidecar', 'missing_artifact_sidecar', 'foreign_redirect', 'dangling_variant', 'unexpected_publication', 'missing_license'):
