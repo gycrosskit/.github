@@ -16,7 +16,7 @@
 
 ## 发布提速的执行入口
 
-当前修复候选复用各库 Source regression 的 `native` job，增加 `warm_native_cache` 布尔输入；不新增自动全量构建或发布 job。只有在 `main` 手动打开该输入、且版本输入留空时，才运行工具链预热。正常 main push 仍轻量；未指定预热的空版本 dispatch 仍执行源码回归。合入前这些候选不代表线上已经生效。
+14 库已合入的实现复用各库 Source regression 的 `native` job，增加 `warm_native_cache` 布尔输入；不新增自动全量构建或发布 job。只有在 `main` 手动打开该输入、且版本输入留空时，才运行工具链预热。正常 main push 仍轻量；未指定预热的空版本 dispatch 仍执行源码回归。源码门禁和 main 轻量检查已实际通过，缓存命中与公开消费者另行验收。
 
 - 各库 `gradle/native-toolchain.properties` 固定实际编译器、目标与缓存修订；与源码/consumer 的 Kotlin 版本不一致时直接失败。客服使用官方 `2.2.21` 和 iOS，其他库使用鸿蒙 fork `2.2.21-1.0.0` 和实际 Native 目标，不混用。
 - `scripts/ci-native-cache.py --key` 由编译器清单、预热实现、OS/CPU、实际 Xcode 版本生成身份。业务版本、README 和无关 consumer 配置不再改变工具链 key；编译器/目标/Xcode/预热实现变化会改变 key。
@@ -24,11 +24,11 @@
 - 预热 miss 才编译临时目录中的最小 iOS Framework/OHOS shared library 探针，填充编译器与 LLVM；hit 时跳过探针。不编译组件业务源码，不发布制品；所有源码测试、远程 public 与 consumer 门禁保留。
 - Release workflow 不再运行无输出消费者的第二次 scope 分类；`release-android`/`release-native` 保留原 required 名称，依赖 public 成功。包内模块根 README/CHANGELOG 只有同目录存在 `oh-package.json5` 时视为维护文档，manifest/ETS/未知目录及混合源码改动仍运行源码门禁。
 
-合入后先在 Media 试点：在 main 手动 dispatch 一次预热，再验证相同 key 的命中与精确版本消费；记录 restore/save、下载字节、探针/消费者执行及 runner 等待。通过后按库填充其 main 缓存，工具链未变且缓存仍在时不重复预热。缓存被清理或输入变化时再执行。当前未取得云端冷暖对照，不承诺提速比例。
+Media 试点已完成：[首次 main 预热](https://github.com/gycrosskit/media/actions/runs/37787758499)的 Native job 运行 10 分 56 秒，保存约 802 MB 的 main 工具链缓存；[第二次预热](https://github.com/gycrosskit/media/actions/runs/37790413889)命中相同精确 key，运行 1 分 10 秒并跳过探针与重复保存；[0.1.8 精确公开消费者](https://github.com/gycrosskit/media/actions/runs/37790427457)的 public、Android、Native 均成功，Native 恢复同一 main key。首次运行仍有既存 Gradle 缓存，上述对照仅代表这两次预热 job，排队另计，不能外推为整体发版提速比例。其余库按同样入口填充各自 main 缓存；工具链未变且缓存仍在时不重复预热，清理或输入变化时再执行。
 
 发布按渠道生产变化选择集合，不要求 14 库每次齐发。版本、源码、文档和 checksum 一次冻结后开 PR；同一冻结归档只生产一次，同一版本 public 严格验一次，失败只重跑失败项。公开只读核验可限量并行，本机重构建保留内存/工具链锁；现有证据不足以把十几秒本地锁等待当成主要瓶颈，暂不加新调度框架或取消构建锁。
 
-本轮代码与本地检查完成后再按已有 Git Flow 提交和合入；未提交的候选不代表 GitHub 已生效。线上实际时间与命中率必须在合入后测量，不把少跑 job 的数量换算成未经测量的提速百分比。文档流程的目标是执行时间不超过 5 分钟，排队另算；平台编译不承诺固定分钟数。
+14 库修复均已通过原源码门禁并正常合入，未绕过主分支保护。本轮生产变化只发布 [Sound HAR 0.1.2](https://github.com/gycrosskit/sound/releases/tag/har-0.1.2)，专用 Release 校验运行 19 秒并成功，Maven/iOS 任务按渠道跳过；固定 HAR 的独立远程消费通过。OHPM 接受提交但仍审核中，未将其写成 Registry 已可用。线上时间按实际运行记录，不把少跑 job 的数量换算成未经测量的提速百分比。文档流程的目标是执行时间不超过 5 分钟，排队另算；平台编译不承诺固定分钟数。
 
 ## 原有验收保留什么
 
