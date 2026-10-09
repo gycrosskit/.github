@@ -58,6 +58,7 @@ jobs:
                   'Manual request': '手动请求',
                   'Automatic review': '自动审查',
                   'Pull request opened': '创建 PR',
+                  'PR opened': '创建 PR',
                   'Ready for review': '草稿转为可审查',
                   'Draft marked ready': '草稿转为可审查',
                   '**Reviewed commit:**': '**已审查提交：**',
