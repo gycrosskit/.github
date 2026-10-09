@@ -95,6 +95,7 @@ Codex can also answer questions or update the PR. Try commenting "@codex address
         self.assertIn('https://openai.com/codex', result)
         self.assertNotIn('@codex', result)
         for trigger, translated in [('Draft marked ready', '草稿转为可审查'),
+                                    ('PR opened', '创建 PR'),
                                     ('Pull request opened', '创建 PR')]:
             with self.subTest(trigger=trigger):
                 result = TRANSLATE(SUMMARY.replace('Manual request', trigger))
