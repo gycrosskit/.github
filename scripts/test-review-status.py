@@ -27,6 +27,7 @@ This comment shows the latest Codex review activity on this pull request.
 | Review | Status | Commit | Review trigger |
 | **Code Review** | **Completed** <relative-time datetime="2026-10-09T08:35:31.239709Z">2026-10-09T08:35:31.239709Z</relative-time> | `oldcommit` | Manual request |
 '''
+AUTO_NO_FINDINGS = (WORKFLOW.parents[2] / 'scripts/fixtures/review-status-auto-no-findings.txt').read_text()
 
 
 class ReusableWorkflowTest(unittest.TestCase):
@@ -85,6 +86,19 @@ class TranslationTest(unittest.TestCase):
 Codex can also answer questions or update the PR. Try commenting "@codex address that feedback".
 '''
         self.assertNotIn('@codex', TRANSLATE(source))
+
+    def test_observed_automatic_templates(self):
+        result = TRANSLATE(AUTO_NO_FINDINGS)
+        self.assertTrue(result.startswith('评审结果：本次未发现重大问题。'))
+        self.assertIn('**已审查提交：** `2b60ed3f6d`', result)
+        self.assertIn('https://openai.com/codex', result)
+        self.assertNotIn('@codex', result)
+        for trigger, translated in [('Draft marked ready', '草稿转为可审查'),
+                                    ('Pull request opened', '创建 PR')]:
+            with self.subTest(trigger=trigger):
+                result = TRANSLATE(SUMMARY.replace('Manual request', trigger))
+                self.assertIn(f'| {translated} |', result)
+                self.assertNotIn(trigger, result)
 
 
 class CommentSyncTest(unittest.TestCase):
@@ -173,10 +187,22 @@ class CommentSyncTest(unittest.TestCase):
         self.assertEqual(self.writes, [])
 
     def test_unknown_bot_trigger_is_rejected_before_publishing(self):
-        self.source['body'] = SUMMARY + '\n@codex unknown new trigger'
-        with self.assertRaises(AssertionError):
-            self.run_sync()
-        self.assertEqual(self.writes, [])
+        for body in [SUMMARY, AUTO_NO_FINDINGS]:
+            with self.subTest(body=body.splitlines()[0]):
+                self.source['body'] = body + '\n@codex unknown new trigger'
+                with self.assertRaises(AssertionError):
+                    self.run_sync()
+                self.assertEqual(self.writes, [])
+
+    def test_real_automatic_no_findings_is_published_without_source_write(self):
+        self.source['body'] = AUTO_NO_FINDINGS
+        self.run_sync()
+        self.run_sync()
+        self.assertEqual(self.source['body'], AUTO_NO_FINDINGS)
+        self.assertEqual(len(self.mirrors), 1)
+        self.assertTrue(self.mirrors[0]['body'].startswith('<!-- gycrosskit-review-status:123 -->'))
+        self.assertNotIn('@codex', self.mirrors[0]['body'])
+        self.assertTrue(all(url != self.source_url for _, url, _ in self.writes))
 
 
 if __name__ == '__main__':

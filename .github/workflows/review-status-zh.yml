@@ -56,6 +56,7 @@ jobs:
                   'Automatic review': '自动审查',
                   'Pull request opened': '创建 PR',
                   'Ready for review': '草稿转为可审查',
+                  'Draft marked ready': '草稿转为可审查',
                   '**Reviewed commit:**': '**已审查提交：**',
                   'About Codex in GitHub': '关于 GitHub 中的 Codex',
                   'Your team has set up Codex to review pull requests in this repo': '本仓库已接入 Codex 代码审查',
@@ -67,6 +68,7 @@ jobs:
                   'Codex reacts with 👀 while any review is running, comments if it has suggestions, and reacts with 👍 once all reviews finish with no findings.': '👀 表示正在审查；有问题时 Codex 会留下意见；所有审查完成且没有发现问题时，会以 👍 表示完成。',
                   'If Codex has suggestions, it will comment; otherwise it will react with 👍.': '有问题时 Codex 会留下意见；没有发现问题时，会以 👍 表示完成。',
                   'Codex can also answer questions or update the PR. Try commenting "@codex address that feedback".': 'Codex 也可以回答问题或更新 PR，修复操作需要单独请求。',
+                  'When you [sign up for Codex through ChatGPT](https://openai.com/codex), Codex can also answer questions or update the PR, like "@codex address that feedback".': '通过 [ChatGPT 注册 Codex](https://openai.com/codex) 后，Codex 也可以回答问题或更新 PR，修复操作需要单独请求。',
               }
               for old, new in replacements.items():
                   body = body.replace(old, new)
