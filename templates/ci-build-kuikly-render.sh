@@ -8,7 +8,7 @@ module_repository=${3:-}
 module_tag=${4:-}
 if [[ -n "$module_pod" ]]; then
   [[ "$module_pod" =~ ^[A-Za-z][A-Za-z0-9]*(/[A-Za-z][A-Za-z0-9]*)?$ ]] || { echo 'Invalid Module Pod name' >&2; exit 1; }
-  if [[ -n "$module_tag" ]]; then
+  if [[ -n "$module_repository$module_tag" ]]; then
     [[ "$module_repository" =~ ^[a-z][a-z0-9-]*$ && "$module_tag" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]] || { echo 'Invalid remote repository or immutable tag' >&2; exit 1; }
   else
     test -f "${module_pod%%/*}.podspec" || { echo 'Local Module Podspec is missing' >&2; exit 1; }

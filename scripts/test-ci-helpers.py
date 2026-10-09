@@ -26,6 +26,7 @@ def main():
         for args, error in [(['relative'], 'absolute'),
                             ([build, "Bad';Pod"], 'Invalid Module Pod'),
                             ([build, 'Example/Kuikly', 'bad/repo', '1.0.0'], 'Invalid remote'),
+                            ([build, 'Example/Kuikly', 'example'], 'Invalid remote'),
                             ([build, 'Example/Kuikly', 'example', "bad'tag"], 'Invalid remote'),
                             ([build, '', 'example', '1.0.0'], 'Pod name is required'),
                             ([build, 'Missing/Kuikly'], 'Podspec is missing')]:
