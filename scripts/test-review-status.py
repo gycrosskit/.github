@@ -33,6 +33,7 @@ AUTO_NO_FINDINGS = (WORKFLOW.parents[2] / 'scripts/fixtures/review-status-auto-n
 class ReusableWorkflowTest(unittest.TestCase):
     def test_no_checkout_and_caller_context_with_minimum_permissions(self):
         self.assertIn('on:\n  workflow_call:\n', WORKFLOW_TEXT)
+        self.assertIn('  issue_comment:\n    types:\n      [created, edited]\n', WORKFLOW_TEXT)
         self.assertIn('permissions:\n  pull-requests: write\n', WORKFLOW_TEXT)
         self.assertNotIn('uses:', WORKFLOW_TEXT)
         self.assertNotIn('secrets:', WORKFLOW_TEXT)

@@ -17,7 +17,7 @@
 3. 通过 PR 合入组件库默认分支。`issue_comment` 工作流需存在于默认分支才响应评论事件；确认 Actions 策略允许调用该公共共用 workflow，并保留 `pull-requests: write`。调用方无法给共用任务提升权限。
 4. 在真实组件 PR 检查 Codex 固定英文 summary/no-findings 的 `created` 和 `edited`：中文副评论应复用同一 marker，源评论折叠且正文不被覆盖，真实问题评论保持原位置。分别验证自动评审与中文同步，记录 PR、源评论、中文评论和 Actions run。
 
-reusable workflow 的 GitHub 上下文和 token 来自调用方，`GITHUB_REPOSITORY`、`GITHUB_EVENT_PATH` 与 `GH_TOKEN` 因而定位组件仓库。[GitHub reusable workflow 文档](https://docs.github.com/en/actions/reference/workflows-and-actions/reusing-workflow-configurations)说明调用方上下文与 token 的权限边界。模板只有 `issue_comment` 监听，不发送评审请求，不修改组件源码。
+reusable workflow 的 GitHub 上下文和 token 来自调用方，`GITHUB_REPOSITORY`、`GITHUB_EVENT_PATH` 与 `GH_TOKEN` 因而定位组件仓库。[GitHub reusable workflow 文档](https://docs.github.com/en/actions/reference/workflows-and-actions/reusing-workflow-configurations)说明调用方上下文与 token 的权限边界。共用 workflow 同时监听本仓库 `issue_comment` 的 `created` / `edited`，沿用相同的 bot 身份和 PR 校验，使自身原生评审评论也能同步中文；同样须先合入默认分支并验证真实事件。消费者模板只有 `issue_comment` 监听，不发送评审请求，不修改组件源码。
 
 ## 同步边界与验证
 

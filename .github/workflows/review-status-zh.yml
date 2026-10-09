@@ -2,6 +2,9 @@ name: 评审状态说明
 
 on:
   workflow_call:
+  issue_comment:
+    types:
+      [created, edited]
 
 permissions:
   pull-requests: write
