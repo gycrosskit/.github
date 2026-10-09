@@ -20,6 +20,20 @@ def load(name):
 
 def main():
     changes, runner = load('ci-changes'), load('ci-run')
+    native_builder = ROOT / 'templates/ci-build-kuikly-render.sh'
+    with tempfile.TemporaryDirectory() as temporary:
+        build = str(Path(temporary) / 'build')
+        for args, error in [(['relative'], 'absolute'),
+                            ([build, "Bad';Pod"], 'Invalid Module Pod'),
+                            ([build, 'Example/Kuikly', 'bad/repo', '1.0.0'], 'Invalid remote'),
+                            ([build, 'Example/Kuikly', 'example', "bad'tag"], 'Invalid remote'),
+                            ([build, '', 'example', '1.0.0'], 'Pod name is required'),
+                            ([build, 'Missing/Kuikly'], 'Podspec is missing')]:
+            result = subprocess.run(['bash', str(native_builder), *args], cwd=temporary,
+                                    capture_output=True, text=True)
+            assert result.returncode != 0 and error in result.stderr, (args, result.stderr)
+        assert not Path(build).exists(), 'Rejected inputs must not start Pod installation'
+
     assert changes.source_needed('pull_request', {}, ['README.md', 'docs/接入.md']) is False
     for path in ['scripts/ci-release.sh', '.github/workflows/regression.yml', 'gradle/libs.versions.toml',
                  'tests/fixtures/README.md', 'verification/build.gradle.kts', 'docs/probe.py', '.agents/skills/probe.py', 'unknown']:
