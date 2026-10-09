@@ -23,3 +23,4 @@ jobs:
           python3 scripts/test-ci-helpers.py
           python3 scripts/test-ci-native-cache.py
           python3 tests/test-ci-fork-host.py
+          python3 scripts/test-review-status.py
