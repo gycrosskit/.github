@@ -6,6 +6,7 @@
 - [组件评审技能](skills/gycrosskit-component-review/SKILL.md)：专项全库审查、定向变更评审和修复复审；按公开能力与实际调用链分两轮检查行为及精简。
 - [AI 评审与中文状态](docs/AI评审与中文状态.md)：自动评审设置、中文规则模板与固定 SHA 调用的状态同步 workflow；只评审，不自动修复或合并。
 - [Git Flow 与提交规范](docs/GitFlow与提交规范.md)：分支、提交、PR 和主分支保护。
+- [统一远程验证](docs/统一远程验证.md)：已接入的 14 个功能组件默认使用共用 `scripts/remote-verify.py` 触发已有 CI，默认并发 2、上限 2；本地只做轻量检查，不运行 Gradle、Swift/Xcode 或 Hvigor 重编译。远程结果只证明对应已推送 SHA，不证明本地未提交/未推送文件。
 - [发布流程](docs/发布流程.md)：JitPack、Release 归档、ohpm 与远程消费验证。
 - [组件抽离路线图](docs/组件抽离路线图.md)：拟建组件、边界和实施顺序。
 - [Issues 与迭代流程](docs/Issues与迭代流程.md)：接入反馈、修复 PR、发布和关闭 Issue。
