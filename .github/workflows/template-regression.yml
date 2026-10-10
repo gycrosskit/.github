@@ -26,6 +26,7 @@ jobs:
           python3 scripts/test-ci-actions.py
           python3 tests/test-ci-fork-host.py
           python3 scripts/test-review-status.py
+          python3 scripts/test-remote-verify.py
       - uses: ./actions/ci-diagnostics
         if: always()
         with:
