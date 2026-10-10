@@ -16,11 +16,17 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           persist-credentials: false
+      - uses: ./actions/ci-tools
       - run: |
           python3 scripts/test-check-maven.py
           python3 scripts/test-jitpack-metadata.py
           python3 scripts/test-check-public-maven.py
           python3 scripts/test-ci-helpers.py
           python3 scripts/test-ci-native-cache.py
+          python3 scripts/test-ci-actions.py
           python3 tests/test-ci-fork-host.py
           python3 scripts/test-review-status.py
+      - uses: ./actions/ci-diagnostics
+        if: always()
+        with:
+          status: ${{ job.status }}

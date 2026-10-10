@@ -1,0 +1,14 @@
+name: GY CrossKit CI tools
+description: 将固定版本的 CI-only 工具放到调用组件根目录，保留其项目路径语义。
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        SHARED_ACTION_PATH: ${{ github.action_path }}
+      run: |
+        set -euo pipefail
+        mkdir -p "$GITHUB_WORKSPACE/scripts"
+        for tool in ci-changes.py ci-run.py ci-native-cache.py; do
+          install -m 0755 "$SHARED_ACTION_PATH/../../templates/$tool" "$GITHUB_WORKSPACE/scripts/$tool"
+        done
