@@ -1,0 +1,33 @@
+name: GY CrossKit CI diagnostics
+description: 统一保存成功或失败的公开诊断与测试报告。
+inputs:
+  status:
+    description: 调用 job 的最终状态。
+    required: true
+  extra-paths:
+    description: 组件已有的额外公开验收日志或回执路径。
+    required: false
+    default: ''
+runs:
+  using: composite
+  steps:
+    - if: always()
+      shell: bash
+      env:
+        JOB_STATUS: ${{ inputs.status }}
+      run: |
+        mkdir -p ci-diagnostics
+        printf 'job=%s\nstatus=%s\n' "$GITHUB_JOB" "$JOB_STATUS" > "ci-diagnostics/$GITHUB_JOB.txt"
+    - if: always()
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: ci-${{ github.workflow }}-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+        path: |
+          ci-diagnostics/**/*.log
+          ci-diagnostics/**/*.json
+          ci-diagnostics/**/*.jsonl
+          ci-diagnostics/**/*.txt
+          **/build/test-results/**/*.xml
+          ${{ inputs.extra-paths }}
+        if-no-files-found: ignore
+        retention-days: 7
