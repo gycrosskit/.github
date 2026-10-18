@@ -1,6 +1,8 @@
 # GY CrossKit
 
-面向 Kotlin Multiplatform、Compose Multiplatform（CMP）与 Kuikly 应用的跨平台组件。按用途选择仓库，再阅读对应 README 完成安装和平台接线。
+面向 Kotlin Multiplatform、原生与 Kuikly 应用的跨平台组件。按用途选择仓库，再阅读对应 README 完成安装和平台接线。
+
+当前 Toast `0.2.0-dev`、WebView/Live `0.3.0-dev` 是移除独立 CMP UI 的未发布源码候选；Kuikly Compose 与原生能力继续保留。下表带版本链接的旧发布事实保持不变，新候选尚无正式远程消费证明。
 
 组件版本核对日期：**2026-10-10**，依据各库远程 README 与 Release。Maven 由 JitPack 提供；Git Pod、Swift Package（SPM）与 HarmonyOS HAR 分别安装，配套版本可能不同。预发布状态以 Release 标记为准；发布、精确远程消费和设备业务验收分别记录。OHPM 当前可安装性以组件 README 和 Registry 即时查询为准，本次未查询 Registry。
 
@@ -59,7 +61,7 @@ Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上�
 | [sound](https://github.com/gycrosskit/sound) | 音频准备、播放与事件 | 三端 | [0.1.6](https://github.com/gycrosskit/sound/releases/tag/0.1.6) | 可选 `GYCSound/Kuikly` Git Pod **0.1.6**；HAR **[0.1.2](https://github.com/gycrosskit/sound/releases/tag/har-0.1.2)** |
 
 
-“三端”指 Android、iOS 与 HarmonyOS / OpenHarmony。CMP 与 Kuikly 的同平台入口优先复用组件原生能力；UI、注册及生命周期按入口接线。OHOS 使用 Kuikly/ArkTS HAR 或已声明的 core 能力，本组织未提供独立 CMP OHOS runtime。各平台入口和能力以仓库说明为准。HAR 的完整包名、最低系统要求、权限与释放规则请查对应 README；库版本相同也不代表 API 和设备行为完全一致。
+“三端”指 Android、iOS 与 HarmonyOS / OpenHarmony。上表记录明确版本的发布范围，旧 CMP 能力不代表当前未发布候选；新候选以 core、原生与 Kuikly 为维护入口，保留 Kuikly Compose。UI、注册及生命周期按入口接线，OHOS 使用 Kuikly/ArkTS HAR 或已声明的 core 能力。各平台入口和能力以仓库说明为准。HAR 的完整包名、最低系统要求、权限与释放规则请查对应 README；库版本相同也不代表 API 和设备行为完全一致。
 
 ## 诊断与开发工具
 

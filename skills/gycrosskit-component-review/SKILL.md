@@ -1,6 +1,6 @@
 ---
 name: gycrosskit-component-review
-description: 评审和精简 GY CrossKit 组件的公开能力、平台实现与 CMP/Kuikly 实际调用链。适用于专项全库审查、定向变更评审及修复复审；区分行为、测试、SDK、宿主接线和远程发布证据。
+description: 评审和精简 GY CrossKit 组件的公开能力、平台实现与原生/Kuikly 实际调用链。适用于专项全库审查、定向变更评审及修复复审；区分行为、测试、SDK、宿主接线和远程发布证据。
 ---
 
 # 组件代码评审与精简
@@ -20,7 +20,7 @@ description: 评审和精简 GY CrossKit 组件的公开能力、平台实现与
    每个 API 组标明入口/源码函数、实现平台、UI 引擎或宿主注入方式、配置/品牌输入、生命周期 owner、
    现有测试与未覆盖项。每项最终都有“已检查、明确排除或阻塞”的状态，不以共享 core 自动判定平台行为一致。
 4. 沿入口、参数映射、状态所有者、平台/厂商调用、回调、取消到释放点走通链路；不存在的层级不补造抽象。
-   分别追 CMP Android/iOS、Kuikly Android/iOS/OpenHarmony 的实际接线。没有独立 UI 模块时如实记录宿主复用，
+   分别追 Android/iOS/OpenHarmony 的 core、原生与 Kuikly 实际接线；Kuikly Compose 仍属维护范围，旧 CMP 入口仅按明确历史版本核对。没有独立 UI 模块时如实记录宿主复用，
    OHOS Module 不能自动证明 Android/iOS 同名入口可用；不为形式一致新增无调用的平行桥。
 
 ## 两轮检查

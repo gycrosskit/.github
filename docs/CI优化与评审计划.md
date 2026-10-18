@@ -2,6 +2,8 @@
 
 2026-10-08。本轮覆盖 14 个有组件 CI 的仓库：media、scanner、permission、location、sound、system-actions、wechat、compose-webview、live-sdk、debug-tools、customer-service、toast、jverification、diagnostics。MMKV / Koin / Stately 三个上游 fork 没有同样的 GitHub CI，另列本地构建与远程消费，不虚报已经套用流水线。共用 `.github` 是模板和规则源。
 
+2026-10-18 后续源码候选已转为 core、原生与 Kuikly 维护入口，保留 Kuikly Compose，退出独立 CMP UI；当前能力见[组件文档索引](组件文档索引.md)。下文“不移除 CMP”描述的是 10 月 8 日 CI 改造范围，保留当时发布与验证事实。
+
 ## 执行与验收
 
 | 项目 | 实施内容 | 本地验收 | 上线后验收 |
@@ -40,7 +42,7 @@ Media 试点已完成：[首次 main 预热](https://github.com/gycrosskit/media
 
 ## 评审如何避免反复漏项
 
-评审的事实源仍是各组件 docs/功能与平台差异.md、测试与公开入口。专项全库审查先列出全部范围内能力，逐项追入口、状态 owner、平台调用、回调、取消与释放，分别检查 CMP Android/iOS 和 Kuikly Android/iOS/OpenHarmony。再独立检查精简，最后反向检查和对齐完整范围清单。
+评审的事实源仍是各组件 docs/功能与平台差异.md、测试与公开入口。专项全库审查先列出全部范围内能力，逐项追入口、状态 owner、平台调用、回调、取消与释放，分别检查 Android/iOS/OpenHarmony 的 core、原生与 Kuikly 实际接线。旧 CMP 入口按历史 tag 处理。再独立检查精简，最后反向检查和对齐完整范围清单。
 
 已发现问题先按共同根因修复，并保留能复现的最小回归；不能靠增加保护层或把编译通过写成跨品牌/设备业务一致来结案。阶段性结论明确分源码、替身/行为测试、SDK/模拟器/设备、远程渠道和宿主接线；没有发现也说明未覆盖范围，不保证零缺陷。鸿蒙直播/客服仍按用户范围排除。
 
