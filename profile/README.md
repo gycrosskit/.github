@@ -1,5 +1,7 @@
 # GY CrossKit
 
+> 当前开发候选：live-sdk、wechat、jverification、media、permission、location、sound、toast、system-actions 的 Maven / iOS Pod / OHPM 统一准备 `1.0.0`，尚未发布；Kuikly 基线 2.29.1。下方 Release 链接记录既有已发布版本，不是新候选的消费或真机证明。
+
 面向 Kotlin Multiplatform、原生与 Kuikly 应用的跨平台组件。按用途选择仓库，再阅读对应 README 完成安装和平台接线。
 
 当前 Toast `0.2.0-dev`、WebView/Live `0.3.0-dev` 是移除独立 CMP UI 的未发布源码候选；Kuikly Compose 与原生能力继续保留。下表带版本链接的旧发布事实保持不变，新候选尚无正式远程消费证明。
