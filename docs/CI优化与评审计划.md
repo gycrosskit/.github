@@ -1,5 +1,7 @@
 # CI 优化与组件评审计划
 
+下文保留 2026-10-08/18 的 Actions 改造与测量，不作为当前 dispatch/预热指令。2026-10-25 的 18 库源码验收与 Jenkins 入口准备见[统一远程验证](统一远程验证.md)，发布进度见[发布流程](发布流程.md)；源码已验收不等于包/公开消费/事件保护全切换，不再调用旧 warm_native_cache dispatch。
+
 2026-10-08。本轮覆盖 14 个有组件 CI 的仓库：media、scanner、permission、location、sound、system-actions、wechat、compose-webview、live-sdk、debug-tools、customer-service、toast、jverification、diagnostics。MMKV / Koin / Stately 三个上游 fork 没有同样的 GitHub CI，另列本地构建与远程消费，不虚报已经套用流水线。共用 `.github` 是模板和规则源。
 
 2026-10-18 后续源码候选已转为 core、原生与 Kuikly 维护入口，保留 Kuikly Compose，退出独立 CMP UI；当前能力见[组件文档索引](组件文档索引.md)。下文“不移除 CMP”描述的是 10 月 8 日 CI 改造范围，保留当时发布与验证事实。
