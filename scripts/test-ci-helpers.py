@@ -35,6 +35,40 @@ def main():
             assert result.returncode != 0 and error in result.stderr, (args, result.stderr)
         assert not Path(build).exists(), 'Rejected inputs must not start Pod installation'
 
+        tools = Path(temporary) / 'bin'
+        tools.mkdir()
+        pod = tools / 'pod'
+        pod.write_text('''#!/bin/sh
+ruby -rjson -e '
+def install!(*); end
+def platform(*); end
+def use_frameworks!(*); end
+def target(*); yield; end
+def pod(*args, **options); (@pods ||= []) << [args, options]; end
+load "Podfile"
+File.write(ENV.fetch("DEPENDENCY_RECEIPT"), JSON.generate(@pods))
+'
+exit 75
+''')
+        pod.chmod(0o755)
+        (Path(temporary) / 'Example.podspec').touch()
+        for label, args, expected in [
+            ('renderer', [], [[['OpenKuiklyIOSRender', '2.29.1'], {}]]),
+            ('local', ['Example/Kuikly'], [[['Example/Kuikly'], {'path': str(Path(temporary).resolve())}]]),
+            ('remote', ['Example/Kuikly', 'example', 'native-1.0.0'],
+             [[['Example/Kuikly'], {'git': 'https://github.com/gycrosskit/example.git', 'tag': 'native-1.0.0'}]]),
+            ('legacy', ['Example/Kuikly', 'example', 'native-0.1.8'],
+             [[['Example/Kuikly'], {'git': 'https://github.com/gycrosskit/example.git', 'tag': 'native-0.1.8'}]]),
+        ]:
+            receipt = Path(temporary) / (label + '.json')
+            result = subprocess.run(['bash', str(native_builder), str(Path(temporary) / label), *args],
+                cwd=temporary, capture_output=True, text=True,
+                env={**os.environ, 'PATH': str(tools) + os.pathsep + os.environ['PATH'],
+                     'DEPENDENCY_RECEIPT': str(receipt)})
+            assert result.returncode == 75, result.stderr
+            actual = json.loads(receipt.read_text())
+            assert actual == expected, (label, actual, expected)
+
     assert changes.source_needed('pull_request', {}, ['README.md', 'docs/接入.md']) is False
     for path in ['scripts/ci-release.sh', '.github/workflows/regression.yml', 'gradle/libs.versions.toml',
                  'tests/fixtures/README.md', 'verification/build.gradle.kts', 'docs/probe.py', '.agents/skills/probe.py', 'unknown']:
