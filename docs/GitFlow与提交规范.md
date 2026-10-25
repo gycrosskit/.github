@@ -4,9 +4,57 @@
 
 - `main` 是默认主分支。日常修改从实际目标分支创建短期分支，经 PR 合并；不直接推送、强推或删除主分支。
 - AI 分支使用 `codex/<任务>`；人工开发可使用 `feature/<任务>`、`fix/<问题>`、`hotfix/<问题>`。已启用仓库的任务 PR 指向下节登记的开发线，其余仓库保留当前 PR 入口；独立验证及保护规则按实际验收分阶段切换。
-- 先确认目标分支。Koin、Stately 的 OpenHarmony 适配位于各自的 `codex/ohos-*` 分支，默认 `main` 是上游基线；适配修改应向适配分支发 PR，不把默认分支的构建结果当作适配结果。
+- 先确认目标分支。Fork 按下节的鸿蒙适配流程执行；现有适配线在完成专项迁移前仍按实际登记使用，不把纯上游 `main` 的构建结果当作鸿蒙适配结果。
 - 组件先完成相关本地轻量检查及统一 Jenkins 编译、回归和消费验证，通过后再创建 MR/PR；真机问题另行设备复验，不以源码门禁替代。本地受阻先说明，不默认先提评审或发版；例外需用户明确决定。
 - PR 写明修改原因、验证命令与结果、未验证范围。合并前确认目标分支、差异范围和必要检查的最终结果；发布标签只从确认的发布提交创建，不覆盖已有标签。
+
+## Fork 鸿蒙适配流程
+
+适用于 koin-ohos、stately-ohos、mmkv-ohos。维护固定上游版本上的最小鸿蒙补丁，Android/iOS 实现沿用上游；只调整 OHOS 实现、source set、Native bridge 及必要的构建、依赖和发布配置。公共 API 尽量与对应上游版本兼容；必须修改 `commonMain`、`nativeMain` 或公共工具链时，说明原因并验证实际受影响平台。不将自有组件的 UI 策略或无关清理扩展到 Fork，不为只发布部分模块而删除无关上游源码。
+
+目标长期分支仅保留 `main`、`dev`：`main` 是已验收的鸿蒙适配稳定线，`dev` 是适配开发与集成线；任务使用短期 `codex/*`、`fix/*`。官方 remote 和原始 tag 保存上游基线，无需再保留一条纯上游镜像分支。执行前按 URL 区分官方仓库与自有 Fork；推荐 `upstream` 指官方、`origin` 指 Fork，但不依据名字推断或自动修改现有 remote。
+
+1. 选择明确的上游 Release/tag，记录完整 SHA、Fork 修订及 Kotlin/OHOS SDK 工具链。上游升级按需立项，不自动跟随上游开发分支。
+2. 从 `dev` 建任务分支；升级时在该分支整合选定上游 tag，解决冲突并保留适配提交。不要直接同步覆盖 Fork 稳定线，也不重写已发布历史。
+3. 先完成本地轻量检查，再按[统一远程验证](统一远程验证.md#fork-鸿蒙适配验证)验证准确候选 SHA，评审与必要门禁通过后 PR 普通 merge 入 `dev`。集成结果变化时重新验证，不将旧任务结果套给新源码。
+4. `dev` 集成验收通过后 PR 晋升 `main`；按[Fork 发布](发布流程.md#fork-鸿蒙适配发布)冻结最终源码，执行 package、release 和公开消费验收。版本采用各 Fork 现有的上游版本加鸿蒙修订体系，不随 15 个功能组件统一成 `1.0.0`。
+5. 稳定版紧急修复从 `main` 建 `fix/*`，验证后合入 `main` 并回流 `dev`。任务完成、成果可靠保存且无评审、CI、发布或其他任务依赖后，清理临时分支与 Worktree，保留发布 tag、制品和验收证据；不为未提出的多版本维护预建长期分支。
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as 官方上游
+    participant D as Fork dev
+    participant T as 临时任务分支
+    participant J as Jenkins
+    participant M as Fork main
+    participant R as 制品仓库
+    D->>T: 创建 codex/ohos-* 或 fix/*
+    opt 升级上游版本
+        U-->>T: 引入固定 tag 和完整 SHA
+    end
+    Note over T: 修改 OHOS 和必要构建边界，保持 Android/iOS 兼容
+    T->>T: 本地轻量检查
+    T->>J: verify 准确候选 SHA
+    Note over J: OHOS 完整验证，Android/iOS 兼容回归
+    alt 评审或验证失败
+        J-->>T: 返回问题，修复后重验
+    else 评审和验证通过
+        T->>D: PR 普通 merge 入 dev
+        D->>J: 核验最新集成结果
+        J-->>D: 通过
+        D->>M: PR 晋升稳定线
+        M->>J: 冻结 main 最终 SHA
+        J->>J: package 构建、摘要与私有消费
+        J->>R: release 发布独立鸿蒙版本
+        R-->>J: 下载精确公开版本
+        J->>J: 公开消费验证
+        J-->>M: 保存准确源码、制品与验收回执
+        Note over D,M: 验收成功且无活动依赖后清理临时环境
+    end
+```
+
+**过渡边界：**以上为后续执行规范，不表示三个 Fork 已迁移。2026-10-25 本轮只更新共用规范，三个 Fork 的源码、分支、remote、CI、发布版本均不调整。现有适配线与历史登记见下表；专项迁移前须核对真实 refs、未保存内容、既有制品与依赖，更新受信 profile、保护和发布入口并完成实际验收，再切换到上述 `main`/`dev`。不能因文档使用目标命名而误向上游基线合并、创建不存在的开发线或删除现有分支。
 
 ## 提交
 

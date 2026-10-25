@@ -5,7 +5,7 @@
 - [组件开发](docs/组件开发.md)：平台边界、公共 API、验证与中文 README。
 - [组件评审技能](skills/gycrosskit-component-review/SKILL.md)：专项全库审查、定向变更评审和修复复审；按公开能力与实际调用链分两轮检查行为及精简。
 - [AI 评审与中文状态](docs/AI评审与中文状态.md)：自动评审设置与中文规则；旧 Actions 状态同步入口已退役；只评审，不自动修复或合并。
-- [Git Flow 与提交规范](docs/GitFlow与提交规范.md)：分支、提交、PR 和主分支保护。
+- [Git Flow 与提交规范](docs/GitFlow与提交规范.md)：分支、提交、PR、主分支保护及 Fork 鸿蒙适配流程；Fork 后续采用 main/dev，现有适配线须专项迁移验收后切换，本轮三个 Fork 不动。
 - [统一远程验证](docs/统一远程验证.md)：18 个组件使用共用 `scripts/remote-verify.py` 委托固定 CI 检出的 Jenkins client；本地做轻量检查，SDK 编译/回归使用既有共享 Job，默认并发 2、上限 2。远程结果只证明对应已推送 SHA，不证明本地未提交/未推送文件。
 - [发布流程](docs/发布流程.md)：JitPack、Release 归档、ohpm 与远程消费验证。
 - [组件抽离路线图](docs/组件抽离路线图.md)：拟建组件、边界和实施顺序。
