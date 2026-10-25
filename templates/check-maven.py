@@ -2,7 +2,6 @@
 import hashlib
 import io
 import json
-import sys
 import zipfile
 from pathlib import Path
 import xml.etree.ElementTree as ET

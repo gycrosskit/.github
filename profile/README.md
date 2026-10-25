@@ -1,14 +1,14 @@
 # GY CrossKit
 
-> 当前开发候选：live-sdk、wechat、jverification、media、permission、location、sound、toast、system-actions 的 Maven / iOS Pod / OHPM 统一准备 `1.0.0`，尚未发布；Kuikly 基线 2.29.1。下方 Release 链接记录既有已发布版本，不是新候选的消费或真机证明。
+> 当前开发候选：15 个非 Fork 功能组件统一准备 `1.0.0`，Kuikly 基线 2.29.1；尚未正式发布。package、独立消费与正式发布分别验收，当前 release 暂停。下方旧 Release 链接仅记录当时的发布范围。
 
 面向 Kotlin Multiplatform、原生与 Kuikly 应用的跨平台组件。按用途选择仓库，再阅读对应 README 完成安装和平台接线。
 
-当前 Toast `0.2.0-dev`、WebView/Live `0.3.0-dev` 是移除独立 CMP UI 的未发布源码候选；Kuikly Compose 与原生能力继续保留。下表带版本链接的旧发布事实保持不变，新候选尚无正式远程消费证明。
+当前仅维护 Kuikly UI、core 与原生能力；Toast、WebView、Live 的独立 CMP UI 已移除。KMP 编译底座、Kuikly Compose 和 Compose runtime 继续保留。下表带版本链接的旧发布事实保持不变，新候选尚无正式远程消费证明。
 
-组件版本核对日期：**2026-10-10**，依据各库远程 README 与 Release。Maven 由 JitPack 提供；Git Pod、Swift Package（SPM）与 HarmonyOS HAR 分别安装，配套版本可能不同。预发布状态以 Release 标记为准；发布、精确远程消费和设备业务验收分别记录。OHPM 当前可安装性以组件 README 和 Registry 即时查询为准，本次未查询 Registry。
+下列历史发布版本核对日期：**2026-10-10**（当前源码/治理说明更新于 2026-10-25），依据各库远程 README 与 Release。Maven 由 JitPack 提供；Git Pod、Swift Package（SPM）与 HarmonyOS HAR 分别安装，配套版本可能不同。预发布状态以 Release 标记为准；发布、精确远程消费和设备业务验收分别记录。OHPM 当前可安装性以组件 README 和 Registry 即时查询为准，本次未查询 Registry。
 
-本轮审查修复涉及回调、测试、CI 与文档；新增生产发版仅为微信 iOS **[native-0.1.8](https://github.com/gycrosskit/wechat/releases/tag/native-0.1.8)**。下表其他版本为已有发布组合，不表示本轮重新发布。
+下列历史审查涉及回调、测试、CI 与文档；当时新增生产发版仅为微信 iOS **[native-0.1.8](https://github.com/gycrosskit/wechat/releases/tag/native-0.1.8)**。下表其他版本为已有发布组合，不表示本轮重新发布。
 
 ## 组件地图与接入流程
 
@@ -21,6 +21,7 @@ flowchart LR
     App --> Web["网页：compose-webview"]
     App --> Vendor["厂商适配：jverification / wechat / customer-service / live-sdk"]
     App --> Diagnostics["诊断：diagnostics / debug-tools"]
+    App --> Dynamic["动态页面：dynamic-page"]
     Web -->|"HarmonyOS 窗口策略共用"| Window["system-actions HAR"]
     Foundation -->|"Koin Core 使用"| Stately["配套 Stately 适配版本"]
 ```
@@ -72,6 +73,10 @@ Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上�
 | [diagnostics](https://github.com/gycrosskit/diagnostics) | 系统采集、私有文件、日志与有界网络诊断 | 三端、JVM | [0.2.0-rc.10](https://github.com/gycrosskit/diagnostics/releases/tag/0.2.0-rc.10) | Git Pod / SPM **[0.2.0-rc.1](https://github.com/gycrosskit/diagnostics/releases/tag/0.2.0-rc.1)**；可选 Ktor / OkHttp 采集；宿主配置正文额度、准入、脱敏、上传与凭据，无 HAR |
 | [debug-tools](https://github.com/gycrosskit/debug-tools) | Bug 协议、安全存储与摇动 | Android、iOS、OHOS | [0.2.0-rc.6](https://github.com/gycrosskit/debug-tools/releases/tag/0.2.0-rc.6) | OHOS 配套 HAR **0.2.0-rc.3**；宿主提供 UI、品牌、凭据与准入 |
 
+## 动态页面
+
+[dynamic-page](https://github.com/gycrosskit/dynamic-page) 提供动态页面协议与 Kuikly/原生接线；当前 `1.0.0` 为未发布候选，支持范围和接入方式见该库 README 与功能文档。它不属于下面旧版本发布表。
+
 ## 厂商 SDK 集成
 
 | 仓库 | 用途 | 平台 | Maven 版本 | 独立原生渠道与状态 |
@@ -87,17 +92,19 @@ Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上�
 
 ## CI 与自动评审
 
-14 个功能库按三层分别记录：PR 源码回归与 SDK 编译、固定 Release 公开文件与哈希校验、精确远程版本的独立消费者构建。共享脚本从固定提交安装；HAR/Registry 和真机业务不能由源码 job 代算。实际运行状态与提交覆盖范围以各库 Actions 为准。
+15 个非 Fork 功能组件使用共享 Jenkins 的 verify、package、release 三个 Job，分别记录源码验证、准确 SOURCE_SHA 的冻结候选和发布/独立消费证据。开发 PR 目标为 `dev`；自动 verify 的 PR-only 过滤修订正在等待 package 闭合窗口部署，发布和 hotfix 保留手动按 SHA 验证。15 个功能库与规则库 `.github` 的 Actions 已停用；CI 工具以 Gitee 为维护源，不提供 GitHub 工具仓库入口；Fork 保持原状。实际运行与提交覆盖以对应 Jenkins 报告为准，不能由源码或 package 成功推断正式发布和设备验收。
 
-自动 AI 评审在创建待审查 PR / 草稿转为可审查时触发，不能保证每次 push 都完成最新提交评审。中文状态摘要同步到固定评论，原文折叠保留；评审不自动修复或合并。规则见[AI 评审与中文状态](https://github.com/gycrosskit/.github/blob/main/docs/AI评审与中文状态.md)。
+新候选的最新功能（包括 WebView iOS PiP owner/宿主接线）以各库当前功能文档与准确 SHA 验证为准；旧版本表不能替代本次 `1.0.0`。
+
+已启用 Automatic review 的仓库在创建待审查 PR / 草稿转为可审查时触发自动 AI 评审，不能保证每次 push 都完成最新提交评审。旧 Actions 中文状态同步入口已退出；评审不自动修复或合并。规则见[AI 评审与中文状态](https://github.com/gycrosskit/.github/blob/main/docs/AI评审与中文状态.md)。
 
 ## 文档与反馈
 
 - 安装与使用：对应仓库 **README → 接入指南**，开发和构建方法另见仓库验证文档。
 - 版本与变更：对应 **Releases / Git 标签**，固定版本消费，升级时同时检查平台原生包版本。
 - 问题反馈：在对应仓库 **Issues** 提供版本、平台、脱敏复现和日志，不上传凭据。
-- 测试与 API 审查：[14 个功能组件的回归、注释与验收边界](https://github.com/gycrosskit/.github/blob/main/docs/组件测试与API审查.md)。
-- 自动门禁：[14 库源码、发布产物及独立消费验证](https://github.com/gycrosskit/.github/blob/main/docs/持续集成门禁.md)。
+- 测试与 API 审查：[组件回归、注释与历史验收边界](https://github.com/gycrosskit/.github/blob/main/docs/组件测试与API审查.md)。
+- 自动门禁：[组件源码、发布产物及独立消费验证](https://github.com/gycrosskit/.github/blob/main/docs/持续集成门禁.md)。
 - 共用维护：[组件文档规范](https://github.com/gycrosskit/.github/blob/main/docs/组件文档规范.md) · [发布流程](https://github.com/gycrosskit/.github/blob/main/docs/发布流程.md)。
 
 debug-tools 和 customer-service 为多模块 JitPack 项目，根 KMP 坐标分别使用 `com.github.gycrosskit.debug-tools:debug-tools` 与 `com.github.gycrosskit.customer-service:customer-service`；安装时按 README 固定版本。Maven、Git Pod 与 OHPM 各自验收，Release 可下载不表示 OHPM 已上架。

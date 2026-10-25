@@ -102,8 +102,8 @@ class CheckerTest(unittest.TestCase):
 
     def test_jvm_runtime_bytecode_limit(self):
         checker = Path(__file__).resolve().parents[1] / 'templates/check-maven.py'
-        for major in (61, 65):
-            with tempfile.TemporaryDirectory() as directory:
+        for major, limit in ((61, True), (65, True), (65, False)):
+            with self.subTest(major=major, limit=limit), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory); module = stage(root)
                 metadata = json.loads(module.read_text())
                 artifact = next(module.parent.glob('*.jar'))
@@ -114,8 +114,11 @@ class CheckerTest(unittest.TestCase):
                 entry = variant['files'][0]; entry['size'] = artifact.stat().st_size
                 entry.update({algorithm: hashlib.new(algorithm, artifact.read_bytes()).hexdigest() for algorithm in ('md5', 'sha1', 'sha256', 'sha512')})
                 module.write_text(json.dumps(metadata)); checksums(module); checksums(artifact)
-                result = subprocess.run([sys.executable, str(checker), str(root), GROUP, VERSION, 'demo', 'ios_arm64', '--jvm-only', '--max-jvm-major', '61'], text=True, capture_output=True)
-                self.assertEqual(result.returncode == 0, major == 61, result.stdout + result.stderr)
+                command = [sys.executable, str(checker), str(root), GROUP, VERSION, 'demo', 'ios_arm64', '--jvm-only']
+                if limit: command += ['--max-jvm-major', '61']
+                result = subprocess.run(command, text=True, capture_output=True)
+                self.assertEqual(result.returncode == 0, not limit or major == 61, result.stdout + result.stderr)
+                if limit and major > 61: self.assertIn('JVM bytecode exceeds major 61', result.stderr)
 
 
     def test_android_runtime_bytecode_limit(self):

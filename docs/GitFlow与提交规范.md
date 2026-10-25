@@ -20,17 +20,21 @@ GY CrossKit 当前为 GitHub Free，组织级 ruleset 不能自动覆盖未来�
 
 ## GitFlow 分阶段启用
 
-切换按仓库执行，不以共用文档合并或本地测试宣称全部生效。开发线启用与 Jenkins 门禁迁移分别验收。现有 Actions 与必需检查保留；18 项冻结源码验收、release/hotfix 的真实 PR 事件/回填、稳定线晋级、正式发布和公开消费分别验收。全部替代证据齐全后再逐库调整必需 context 并通过 Actions API 停止执行，保留 YAML 合同文件，不能先停掉唯一有效门禁。当前发布、诊断窗口由各主责会话交接。
+切换按仓库执行，不以共用文档合并或本地测试宣称全部生效。开发线启用与 Jenkins 门禁迁移分别验收。2026-10-25 按维护者授权，15 个非 Fork 功能组件与 `.github` 已停用 Actions，旧 Actions 必需检查已退役，其余保护保留；Fork 不在本轮调整范围。源码验证、真实 PR 回填、稳定线晋级、正式发布和公开消费分别验收；停用 Actions 不表示这些阶段已全部通过。当前发布、诊断窗口由各主责会话交接。
+
+Fork 行沿用既有维护登记，本轮不复核或调整其分支、源码和 CI。
 
 | 仓库 | 稳定维护线 | 开发线及当前状态 |
 | --- | --- | --- |
 | live-sdk、wechat、jverification、media、permission、location、sound、toast、system-actions | `main` | `dev` 已启用，任务 PR 指向 `dev` |
-| compose-webview、customer-service、debug-tools、diagnostics、dynamic-page、scanner | `main` | `dev` 待逐库启用；冻结候选尚不能说已合入稳定线 |
+| compose-webview、customer-service、debug-tools、diagnostics、dynamic-page、scanner | `main` | `dev` 已启用，任务 PR 指向 `dev` |
 | koin-ohos | `codex/ohos-4.1.1`，`main` 保留上游基线 | `dev/ohos-4.1.1` 已启用 |
-| stately-ohos | `codex/ohos-2.1.0`，`main` 保留上游基线 | `dev/ohos-2.1.0` 待启用；本次未查到该 ref，按实际维护线评审 |
-| mmkv-ohos | `main` | `dev/ohos` 待启用，保留已有上游 `dev`，不误用为 OHOS 开发线 |
+| stately-ohos | `codex/ohos-2.1.0`，`main` 保留上游基线 | `dev/ohos-2.1.0` 沿用历史登记，本轮未核验该 ref |
+| mmkv-ohos | `main` | `dev/ohos` 沿用历史登记，保留既有上游 `dev`，不误用为 OHOS 开发线 |
 
-2026-10-24 启用上述九库 `dev` 时，从各自当时 `main` 创建，沿用原有分支保护：要求 PR、对管理员生效、禁止强推和删除，保留 `contracts`、`android`、`native`、`release-android`、`release-native` 五个 Actions 必需检查；默认分支仍为 `main`。不得在尚未取得对应仓库 Jenkins 准入和真实回填证据前，把新 Jenkins context 设为必需检查，也不得移除旧 Actions。截至 2026-10-25，18 库已分别完成冻结源码的 Jenkins 验收，原 CI/helper、真实报告、声明跳过与未覆盖边界逐项保留；不把这些源码收据转记为任意新 merge SHA 已重跑，也不据此宣称 package、正式发布、公开消费或事件/分支保护全部验收。九库开发 PR 的合并不等于候选已晋级 main，另外六库的 dev 仍未启用。公共规则仓库 `.github` 的文档 PR 仍指向 `main`。
+15 个非 Fork 功能组件均有 `main`、`dev`。任务 PR 指向 `dev`；普通 merge 保留历史，release/hotfix 验证与发布仍绑定准确 SHA。共用规则库 `.github` 的 PR 指向 `main`。CI 工具只在 Gitee 维护，遵循该仓库的 MR 与固定版本规则；不再查询、复建或同步已删除的 GitHub 旧工具库。不得在未验收真实回填前把新 Jenkins context 设为必需检查，保护规则不使用默认模板覆盖。
+
+verify 自动事件规则调整为只接受目标为 `dev` 的打开中 PR（opened/reopened/synchronize/ready_for_review），dev push、删除分支和其他事件在入队前过滤；发布和 hotfix 保留手动按完整 SHA 验证。该过滤修订仍待当前 package 全阶段、owner/reader/资源闭合后部署，不能把文档规则当作现场已生效。package 按明确 SOURCE_SHA 制作不可变候选，release 消费已验收候选并核对发布 SHA/Tag；MR 本身不选择制品源码。当前 release 暂停，不据候选或 package 成功创建/覆盖 Tag 或公开发布。
 
 开发任务 PR 到绑定的开发线并运行 CI；release 从已冻结的开发线创建，hotfix 从对应生产 Tag 创建。
 release/hotfix 对完整 SHA 独立验证后 PR 到稳定维护线，核对当前源、基线、结果树和本次必需检查的准确回填；同 tree 复用保留原证据身份，变化或证据缺失时实际重新验证；
