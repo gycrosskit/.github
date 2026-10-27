@@ -1,8 +1,44 @@
 # CI 优化与组件评审计划
 
+## 2026-10-27 当前结论与执行边界
+
+本节为当前收尾快照；下文 10 月 26 日及更早的优化顺序、Actions 和预热记录保留其历史范围。用户本轮明确要求暂停新增 Jenkins/CI 门禁与优化，改用本 Mac 现有工具完成剩余构建、发布和公开消费。这是本轮执行方式的例外，不是永久绕过 Review、正常 PR/merge、不可变 Tag、冻结摘要或公开验收的规则；默认流程仍见[发布流程](发布流程.md#发布前)。
+
+根验收接入索引当前确认 15 个 Maven 精确版本就绪；Web/Media 的 Maven 与 OHPM 均为 `1.0.2`，两包已另做真正 Registry 精确安装、锁文件/完整字节核对和 ArkTS API 编译，各 30/30 tasks 实际执行。本轮 Native19 的 SPM 6/6、Pod 13/13 已分别完成根验收；各渠道仍绑定自己的精确版本/Tag，不随 Maven 版本数字改写。Release HAR、Registry、Native、Maven 和设备结论分别记录，不能互相转记。准确版本组合见[发布流程的当前交付快照](发布流程.md#2026-10-27-当前交付快照)。
+
+### 已证缺陷与最小后续验收
+
+| 事实及边界 | 修复或处理状态 | 下一步与验收条件 |
+| --- | --- | --- |
+| Media120 的 Linux 私有 `GRADLE_USER_HOME` 未带入既有 2 GiB JVM 预算，项目 4 GiB 配置生效；Docker 精确容器 OOM 事件已证实 | seed 预算传播已随 MR137 普通合并至 `04f7261`；四个正式 Job 已部署并读回 `04f7261`，受控 Linux 后验尚未完成 | 核实际 JVM 2 GiB / metaspace 768 MiB、Kotlin in-process / workers1，执行原 Android/Robolectric 测试，保留原 OOM 与旧失败 |
+| Live91 的 `java.io.tmpdir` 已接私有目录，仍在 Robolectric `commitFromStaging` 目标写入报 ENOSPC；Java `user.home` / Maven repo 未固定 | 固定私有 Java home / `maven.repo.local` 已随 MR137 合并，正式 Job 已部署，代表任务后验待完成；镜像 `/home/jenkins` 64 MiB 是配置线索，不是当轮目标目录 df 实测 | 核 TestExecutor 的实际 Java 属性、目标路径与容量，再执行原两测试；不能仅调整 TMPDIR 或套用别的 Run 快照结案 |
+| HAR 控制端匿名 GitHub 元数据读取耗尽 60 次额度；Run88 真实 5 路检查已完成，末段仍 UNKNOWN | MR137 已合并：复用已有 release credential 做同仓库元数据 GET，并强制 `repo.private is False`；缺字段/私库拒绝；正式 release92 只读后验 SUCCESS，58.987 秒，零新 SDK、原88 UNKNOWN保留 | readonly 已实跑；apply/resume 仍保留显式 metadata client、PLAN_ONLY 零凭据/零网络及 guest 匿名边界，不新增写重试 |
+| Web1.0.2 在 02:54 UTC 留下未有 Tag 的负状态，07:05 UTC 查回 ok；本轮主责未删除记录，内部更新及触发者未知 | 已保留前后原响应及最终公开消费；不推断平台缓存内部实现 | 公开前仅用状态 API；公开身份与归档字节核准后才按 readiness 显式一次请求 POM，禁止盲取未来 Tag 的 build.log/POM 或自动清理重建 |
+| Xcode/SDK 27 的消费工程不能直接沿用部分 Renderer 的旧 iOS12 目标 | 本轮私有消费者及 04f 原函数默认 iOS15 的 Diagnostics 代表已实际编译；公开 Podspec/厂商代码未改 | SPM manifest/triple 或必要的私有 xcodebuild override 明确记录 iOS15，核 Simulator arm64 产物；不冒充设备验收 |
+| Diagnostics 静态 vendor 与动态 Podfile 接线冲突 | 私有 static 消费者已根验收；部署后直接执行 04f 原函数默认 static+iOS15，4 scheme 再验成功，111.115 秒，610 个厂商文件/链接同字节 | 复用精确 Tag、4 scheme 和实际模块名，保留原动态接线失败；不改厂商库或跳过 scheme，多厂商同时集成到宿主 App 仍需另验 |
+| 收件器猜测 `result.json`、`native-tag-before.log` 等名字，造成 SDK 成功而外层收件失败 | 真实 writer 分别使用 `journal.json`、`native-tag-refs.log` 等合同；已仅补证并保留原失败 | 先用真实输出目录/schema 做最小收件回归；只修报告不重跑已成功 SDK，不伪造 Job SUCCESS |
+| SSH 断线经 `-noReconnect` 放大为退出/回收及遗留 fence，底层断线首因未证 | keepalive 15/3 已配置；定向退休只解决该次失效 epoch，待装 host 修复不等于解决此链 | 保留准确进程/事件与 UNKNOWN，先复核容量/lease/节点闭环；不直接删 flag、扩重试或降低准入阈值 |
+| Harmony/Native 大包复制、stash/unstash 与 mac-tools 串行供应仍占用时间 | 只读槽 fastpath 有候选实现，不代表两 guest SDK/private seed 已合格；供应成功也不等于缓存命中 | 双 Mac 分别核原包 owner/size/SHA、私有可写 seed、真实编译和缺失/错包早拒，再对同环境做冷暖基线 |
+
+CI 修复已通过正常 MR137 合并为 `04f7261`；四个正式 Job 已从 `9ba1720` 更新至 `04f7261`，整脚本审批和六份 XML 读回一致；HAR 控制端已由正式 release92 完成只读对账后验，本 Mac 的当前原函数 Native 四 scheme 代表也已根验；Live 正式后验尚未完成，不能合称全部修复后验已通过。265 例 / 265.676 秒与 Native 配置相关模块 96 例 / 2.293 秒是两组已通过的关联本地套件，覆盖有交叠，不能相加为 361 例。源码、CI、整脚本审批/六 XML 回读及部署后的代表任务分别验收，本地结果不代替 host 或公开 SDK 验收。旧失败、原 journal、原 Tag/归档及历史快照保留。
+
+### 只记录本次测到的阶段时间
+
+| 阶段 | 本轮实测 | 不能据此推定 |
+| --- | --- | --- |
+| Media1.0.2 手动新 Maven 包生产 | 本 Mac JDK21 / Xcode27.1，152/152 tasks 执行，Gradle 日志 44 秒 | 不含完整发布/公开消费；不是受控 Linux 或双 Mac 对照 |
+| Web1.0.2 手动新 Maven 包生产 | 本 Mac JBR21 / Xcode27.1，149/149 tasks 执行，Gradle 日志 35 秒 | 不能与不同源码、JDK/Xcode 的旧 Jenkins 阶段计算提速比例 |
+| Web 私有 Android 消费 | 585.858 秒；包含 `--refresh-dependencies` 与解析/下载 | 不称纯编译耗时或已证明缓存命中 |
+| Web 私有 iOS/OHOS 消费 | 271.524 秒；包含 `--refresh-dependencies`，是多个目标的一次命令 | 不与并行阶段相加，也不外推单平台耗时 |
+| Web 公开 OHOS 消费 | 34.800 秒，真实公开坐标编译与版本检查；4 executed / 1 配置检查 skipped | 不证明其他公开平台、设备或整体发布耗时 |
+| Diagnostics 正式 release92 只读后验 | Jenkins Job 总耗时 58.987 秒，04f 控制端元数据/身份对账 SUCCESS，零新 SDK/公开写入 | 不转记新消费者通过，也不改原88 UNKNOWN |
+| 04f 原函数 Native 代表 | 本 Mac 111.115 秒，包含 Pod 解析/安装和 4 scheme SDK 命令，默认 static+iOS15，无旧 shim | 不等于 Jenkins/双 Mac 实测或多厂商宿主、设备验收 |
+
+后续性能验收固定相同源码树、归档字节、工具链、任务集合与双 Mac 资源，再分别记录冷/暖缓存、供应字节、真实请求/命中、准备/队列/编译/公开消费。当前没有同条件的前后对照，不给效率提升百分比；不以性能统计为由自动重放发布或改写既有成功结果。
+
 下文保留 2026-10-08/18 的 Actions 改造与测量，不作为当前 dispatch/预热指令。2026-10-25 的 18 库源码验收与 Jenkins 入口准备见[统一远程验证](统一远程验证.md)，发布进度见[发布流程](发布流程.md)；源码已验收不等于包/公开消费/事件保护全切换，不再调用旧 warm_native_cache dispatch。
 
-## 2026-10-26 Jenkins 复盘与待优化项
+## 2026-10-26 Jenkins 复盘与待优化项（历史快照）
 
 本轮按实际 Run 区分锁等待、队列、工具准备、候选复制、SDK 编译、发布以及公开消费；并行阶段不能相加为总耗时。28 项 SDK 逻辑生产对应 29 个实际 Run，含一次失败，整体约 2 小时 47 分；19 项 Native 源码渠道生产约 7 分 28 秒。Maven/HAR 的含排队中位数分别约 18 分 05 秒、12 分 38 秒，不是纯编译或依赖下载时间，也不能据此估算单项优化的收益。
 
@@ -16,7 +52,7 @@
 | 加载前失败没有 journal；artifact 保留窗口可能回收历史证据 | 仅识别可证明的已知无写入失败；在回收前保留确有恢复/验收依赖的准确 Run | 未知历史继续阻断，保留原失败和 journal；不扩大清理权限 |
 | 公开复验入口 mock 未执行私有输出目录前置条件，Run105 两平台在编译前因缺父目录失败 | 入口新建 0700 父目录，沿用原有目录安全校验；模拟入口执行真实 shell 和目录函数 | 旧入口先红、新入口转绿，覆盖遗留目录、权限和归档失败，再做真实流水线验收 |
 
-本轮已按维护者最新要求调整顺序：先完成职责、状态/产物说明、重复编译与下载、计时及恢复去重的优化，经 Review、CI、部署与代表组件验收后，才恢复剩余发布。当前源码变更和定向回归不代算部署通过；依赖 metadata 供应成功也不代算冷暖消费收益。SSH UTC/PID 日志与专用用户的有界失联回收已在全局 drain 后应用并独立回读，七个指定 agent 在线；首次 exit255 原因仍未知。大型工具包中转尚未消除，若改为封存镜像只读供应，须重新资格验收并保留旧镜像及证据，不挂载宿主缓存。
+该阶段曾按维护者当时要求调整顺序：先完成职责、状态/产物说明、重复编译与下载、计时及恢复去重的优化，经 Review、CI、部署与代表组件验收后，才恢复剩余发布。当前源码变更和定向回归不代算部署通过；依赖 metadata 供应成功也不代算冷暖消费收益。SSH UTC/PID 日志与专用用户的有界失联回收已在全局 drain 后应用并独立回读，七个指定 agent 在线；首次 exit255 原因仍未知。大型工具包中转尚未消除，若改为封存镜像只读供应，须重新资格验收并保留旧镜像及证据，不挂载宿主缓存。
 
 实际只读网络超时与 SSH 退出仍按原日志保留，未证实根因的不归为 OOM 或缓存故障。以上项目尚未做完整冷暖对照，不承诺提速百分比。HAR 归档与 OHPM 提交、上架、安装和 ArkTS 消费分别统计，不能将归档成功计为 Registry 发布完成。三个 Job 的状态与产物解释见[发布流程](发布流程.md#任务说明状态与产物)，发布前的 Review 检查见[发布前](发布流程.md#发布前)。
 
