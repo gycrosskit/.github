@@ -22,7 +22,6 @@ flowchart LR
     App --> Diagnostics["诊断：diagnostics / debug-tools"]
     App --> Dynamic["动态页面：dynamic-page"]
     Web -->|"HarmonyOS 窗口策略共用"| Window["system-actions HAR"]
-    Foundation -->|"Koin Core 使用"| Stately["配套 Stately 适配版本"]
 ```
 
 ```mermaid
@@ -80,7 +79,7 @@ Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上�
 
 ## CI 与自动评审
 
-当前维护 14 个功能组件，三个 OHOS Fork 均已停维，使用共享 Jenkins 的 verify、package、release 三个 Job，分别记录源码验证、准确 SOURCE_SHA 的冻结候选和发布/独立消费证据。开发 PR 目标为 `dev`；自动 verify 的 PR-only 过滤修订正在等待 package 闭合窗口部署，发布和 hotfix 保留手动按 SHA 验证。15 个功能库与规则库 `.github` 的 Actions 已停用；CI 工具以 Gitee 为维护源，不提供 GitHub 工具仓库入口；三个已停维 Fork 退出新任务，仓库和制品按活动依赖保留。实际运行与提交覆盖以对应 Jenkins 报告为准，不能由源码或 package 成功推断正式发布和设备验收。
+当前维护 14 个功能组件，三个 OHOS Fork 均已停维，使用共享 Jenkins 的 verify、package、release 三个 Job，分别记录源码验证、准确 SOURCE_SHA 的冻结候选和发布/独立消费证据。开发 PR 目标为 `dev`；自动 verify 的 PR-only 过滤修订正在等待 package 闭合窗口部署，发布和 hotfix 保留手动按 SHA 验证。15 个功能库与规则库 `.github` 的 Actions 已停用；CI 工具以 Gitee 为维护源，不提供 GitHub 工具仓库入口；三个已停维 Fork 已退出 CI 新任务清单，本地已清理；Jenkins 线上切换待独立验收。实际运行与提交覆盖以对应 Jenkins 报告为准，不能由源码或 package 成功推断正式发布和设备验收。
 
 新候选的最新功能（包括 WebView iOS PiP owner/宿主接线）以各库当前功能文档与准确 SHA 验证为准；旧版本表不能替代本次 `1.0.0`。
 
@@ -99,13 +98,8 @@ debug-tools 为多模块 JitPack 项目，根 KMP 坐标使用 `com.github.gycro
 
 各组件与上游、厂商 SDK 的许可证分别以对应仓库 README 和 LICENSE 为准。
 
-## 已停维，待宿主迁移后删除
+## 停维与清理边界
 
-2026-10-28：`customer-service`、`mmkv-ohos`、`koin-ohos`、`stately-ohos` 退出新任务与维护清单。宿主仍消费客服 Maven／Git Pod、MMKV Maven 与 Koin Fork，暂留本地及 GitHub 仓库、Tag 与发布制品；未修改宿主。Jenkins 线上是否已移除以配置读回为准，源码补丁不等于已部署。
+2026-10-28：`customer-service`、`mmkv-ohos`、`koin-ohos`、`stately-ohos` 退出新任务与维护清单。2026-10-29 用户确认三个 Fork 不再需要：本地工程、私有验收副本、相关任务接线与产物已清理，未新增归档；CI 新任务清单已排除，Jenkins 线上切换待独立验收。GitHub 删库由用户负责，本任务未执行。上游 Tencent/MMKV、InsertKoinIO/koin 与 touchlab/Stately 不在删除范围。
 
-| 仓库 | 历史用途 | 保留原因 |
-| --- | --- | --- |
-| [customer-service](https://github.com/gycrosskit/customer-service) | 腾讯客服适配 | 宿主仍消费 Maven 与 Git Pod，保留原版本与元数据 |
-| [mmkv-ohos](https://github.com/gycrosskit/mmkv-ohos) | MMKV KMP 存储 Fork | 宿主仍消费 Maven；上游 Tencent/MMKV 不在删除范围 |
-| [koin-ohos](https://github.com/gycrosskit/koin-ohos) | Koin OHOS 适配 Fork | 宿主仍直接消费 `koin-core`；保留旧仓库／制品至迁移完成，上游 InsertKoinIO/koin 不在删除范围 |
-| [stately-ohos](https://github.com/gycrosskit/stately-ohos) | Stately OHOS 适配 Fork | 保留旧版本与依赖核对记录；与 Fork 依赖迁移一起收尾，上游 touchlab/Stately 不在删除范围 |
+`customer-service` 保留此前边界：宿主仍消费 Maven 与 Git Pod，保留仓库、原版本与元数据；本次不修改宿主。Jenkins 线上状态以配置读回为准，源码补丁不等于已部署。
