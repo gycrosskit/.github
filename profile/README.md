@@ -16,14 +16,12 @@
 
 ```mermaid
 flowchart LR
-    App["宿主应用：业务、账号、UI、隐私准入"] --> Foundation["基础：Koin / Stately"]
-    App --> Platform["平台能力：permission / media / scanner / location / toast / sound / system-actions"]
+    App["宿主应用：业务、账号、UI、隐私准入"] --> Platform["平台能力：permission / media / scanner / location / toast / sound / system-actions"]
     App --> Web["网页：compose-webview"]
     App --> Vendor["厂商适配：jverification / wechat / live-sdk"]
     App --> Diagnostics["诊断：diagnostics / debug-tools"]
     App --> Dynamic["动态页面：dynamic-page"]
     Web -->|"HarmonyOS 窗口策略共用"| Window["system-actions HAR"]
-    Foundation -->|"Koin Core 使用"| Stately["配套 Stately 适配版本"]
 ```
 
 ```mermaid
@@ -39,15 +37,6 @@ flowchart TB
 ```
 
 Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上架分别确认，编译通过后仍需真机验收。
-
-## 基础依赖与 OpenHarmony 适配
-
-| 仓库 | 用途 | 已发布平台 | Maven 版本 |
-| --- | --- | --- | --- |
-| [koin-ohos](https://github.com/gycrosskit/koin-ohos/tree/codex/ohos-4.1.1) | Koin 依赖注入，发布 `koin-core` | JVM / Android、iOS、OHOS | [4.1.1-ohos-2.2.21-7](https://github.com/gycrosskit/koin-ohos/releases/tag/4.1.1-ohos-2.2.21-7) |
-| [stately-ohos](https://github.com/gycrosskit/stately-ohos/tree/codex/ohos-2.1.0) | 并发与状态工具 | JVM / Android、iOS、OHOS | [2.1.0-ohos-2.2.21-11](https://github.com/gycrosskit/stately-ohos/releases/tag/2.1.0-ohos-2.2.21-11) |
-
-以上基础依赖本次仅核对适配分支 README 与 Release 版本，未新增构建或远程消费验收。这些仓库保留上游来源和许可证。Koin / Stately 默认 `main` 是上游基线，上述仓库链接直接指向实际 OHOS 适配分支。OHOS 消费使用对应 Kotlin 工具链，按指南替换上游坐标以避免重复 KLIB。
 
 ## UI 与平台能力
 
@@ -90,7 +79,7 @@ Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上�
 
 ## CI 与自动评审
 
-当前维护 14 个非 Fork 功能组件及 Koin、Stately 两个 Fork，使用共享 Jenkins 的 verify、package、release 三个 Job，分别记录源码验证、准确 SOURCE_SHA 的冻结候选和发布/独立消费证据。开发 PR 目标为 `dev`；自动 verify 的 PR-only 过滤修订正在等待 package 闭合窗口部署，发布和 hotfix 保留手动按 SHA 验证。15 个功能库与规则库 `.github` 的 Actions 已停用；CI 工具以 Gitee 为维护源，不提供 GitHub 工具仓库入口；两个维护中的 Fork 保持原状。实际运行与提交覆盖以对应 Jenkins 报告为准，不能由源码或 package 成功推断正式发布和设备验收。
+当前维护 14 个功能组件，三个 OHOS Fork 均已停维，使用共享 Jenkins 的 verify、package、release 三个 Job，分别记录源码验证、准确 SOURCE_SHA 的冻结候选和发布/独立消费证据。开发 PR 目标为 `dev`；自动 verify 的 PR-only 过滤修订正在等待 package 闭合窗口部署，发布和 hotfix 保留手动按 SHA 验证。15 个功能库与规则库 `.github` 的 Actions 已停用；CI 工具以 Gitee 为维护源，不提供 GitHub 工具仓库入口；三个已停维 Fork 已退出 CI 新任务清单，本地已清理；Jenkins 线上切换待独立验收。实际运行与提交覆盖以对应 Jenkins 报告为准，不能由源码或 package 成功推断正式发布和设备验收。
 
 新候选的最新功能（包括 WebView iOS PiP owner/宿主接线）以各库当前功能文档与准确 SHA 验证为准；旧版本表不能替代本次 `1.0.0`。
 
@@ -109,11 +98,8 @@ debug-tools 为多模块 JitPack 项目，根 KMP 坐标使用 `com.github.gycro
 
 各组件与上游、厂商 SDK 的许可证分别以对应仓库 README 和 LICENSE 为准。
 
-## 已停维，待宿主迁移后删除
+## 停维与清理边界
 
-2026-10-28：`customer-service` 与 `mmkv-ohos` 退出新任务与维护清单。宿主仍消费客服 Maven／Git Pod 和 MMKV Maven，暂留本地及 GitHub 仓库、Tag 与发布制品；未修改宿主。Jenkins 线上是否已移除以配置读回为准，源码补丁不等于已部署。
+2026-10-28：`customer-service`、`mmkv-ohos`、`koin-ohos`、`stately-ohos` 退出新任务与维护清单。2026-10-29 用户确认三个 Fork 不再需要：本地工程、私有验收副本、相关任务接线与产物已清理，未新增归档；CI 新任务清单已排除，Jenkins 线上切换待独立验收。GitHub 删库由用户负责，本任务未执行。上游 Tencent/MMKV、InsertKoinIO/koin 与 touchlab/Stately 不在删除范围。
 
-| 仓库 | 历史用途 | 保留原因 |
-| --- | --- | --- |
-| [customer-service](https://github.com/gycrosskit/customer-service) | 腾讯客服适配 | 宿主仍消费 Maven 与 Git Pod，保留原版本与元数据 |
-| [mmkv-ohos](https://github.com/gycrosskit/mmkv-ohos) | MMKV KMP 存储 Fork | 宿主仍消费 Maven；上游 Tencent/MMKV 不在删除范围 |
+`customer-service` 保留此前边界：宿主仍消费 Maven 与 Git Pod，保留仓库、原版本与元数据；本次不修改宿主。Jenkins 线上状态以配置读回为准，源码补丁不等于已部署。
