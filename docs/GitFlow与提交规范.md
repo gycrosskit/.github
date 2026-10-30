@@ -10,7 +10,7 @@
 
 ## Fork 鸿蒙适配流程
 
-适用于 koin-ohos、stately-ohos、mmkv-ohos。维护固定上游版本上的最小鸿蒙补丁，Android/iOS 实现沿用上游；只调整 OHOS 实现、source set、Native bridge 及必要的构建、依赖和发布配置。公共 API 尽量与对应上游版本兼容；必须修改 `commonMain`、`nativeMain` 或公共工具链时，说明原因并验证实际受影响平台。不将自有组件的 UI 策略或无关清理扩展到 Fork，不为只发布部分模块而删除无关上游源码。
+本节作为 Fork 历史流程保留。Koin、Stately、MMKV 均已于 2026-10-28 停维，退出新任务；活动依赖迁移前保留仓库、refs 与旧制品，不能再按下述历史规范安排新发布。维护固定上游版本上的最小鸿蒙补丁，Android/iOS 实现沿用上游；只调整 OHOS 实现、source set、Native bridge 及必要的构建、依赖和发布配置。公共 API 尽量与对应上游版本兼容；必须修改 `commonMain`、`nativeMain` 或公共工具链时，说明原因并验证实际受影响平台。不将自有组件的 UI 策略或无关清理扩展到 Fork，不为只发布部分模块而删除无关上游源码。
 
 目标长期分支仅保留 `main`、`dev`：`main` 是已验收的鸿蒙适配稳定线，`dev` 是适配开发与集成线；任务使用短期 `codex/*`、`fix/*`。官方 remote 和原始 tag 保存上游基线，无需再保留一条纯上游镜像分支。执行前按 URL 区分官方仓库与自有 Fork；推荐 `upstream` 指官方、`origin` 指 Fork，但不依据名字推断或自动修改现有 remote。
 
@@ -75,14 +75,12 @@ Fork 行沿用既有维护登记，本轮不复核或调整其分支、源码和
 | 仓库 | 稳定维护线 | 开发线及当前状态 |
 | --- | --- | --- |
 | live-sdk、wechat、jverification、media、permission、location、sound、toast、system-actions | `main` | `dev` 已启用，任务 PR 指向 `dev` |
-| compose-webview、customer-service、debug-tools、diagnostics、dynamic-page、scanner | `main` | `dev` 已启用，任务 PR 指向 `dev` |
-| koin-ohos | `codex/ohos-4.1.1`，`main` 保留上游基线 | `dev/ohos-4.1.1` 已启用 |
-| stately-ohos | `codex/ohos-2.1.0`，`main` 保留上游基线 | `dev/ohos-2.1.0` 沿用历史登记，本轮未核验该 ref |
-| mmkv-ohos | `main` | `dev/ohos` 沿用历史登记，保留既有上游 `dev`，不误用为 OHOS 开发线 |
+| compose-webview、debug-tools、diagnostics、dynamic-page、scanner | `main` | `dev` 已启用，任务 PR 指向 `dev` |
+| customer-service、mmkv-ohos、koin-ohos、stately-ohos（已停维） | 保留现有 refs | 退出新 CI／任务接线，宿主迁移前不删库或改 refs |
 
-15 个非 Fork 功能组件均有 `main`、`dev`。任务 PR 指向 `dev`；普通 merge 保留历史，release/hotfix 验证与发布仍绑定准确 SHA。共用规则库 `.github` 的 PR 指向 `main`。CI 工具只在 Gitee 维护，遵循该仓库的 MR 与固定版本规则；不再查询、复建或同步已删除的 GitHub 旧工具库。不得在未验收真实回填前把新 Jenkins context 设为必需检查，保护规则不使用默认模板覆盖。
+14 个维护中的非 Fork 功能组件均有 `main`、`dev`。任务 PR 指向 `dev`；普通 merge 保留历史，release/hotfix 验证与发布仍绑定准确 SHA。共用规则库 `.github` 的 PR 指向 `main`。CI 工具只在 Gitee 维护，遵循该仓库的 MR 与固定版本规则；不再查询、复建或同步已删除的 GitHub 旧工具库。不得在未验收真实回填前把新 Jenkins context 设为必需检查，保护规则不使用默认模板覆盖。
 
-15 个非 Fork 组件的 verify 自动事件规则只接受目标为 `dev` 的打开中 PR（opened/reopened/synchronize/ready_for_review），dev push、删除分支和其他事件在入队前过滤；发布和 hotfix 保留手动按完整 SHA 验证。CI `88fa120a28acf0b016af4ccd8dc05174f4c7b65a` 的 renderer 已包含该规则，本地四 Job 推广回执只确认固定 CI 更新并保留原 trigger 配置；本轮真实事件过滤及回填效果尚未独立现场验收，不能由源码或 XML 读回推导通过。三个 Fork 保留原入口。package 按明确 SOURCE_SHA 制作不可变候选，release 绑定本轮已验收的准确 producer、发布 SHA/Tag 与同一字节；MR 本身不选择制品源码。维护者已授权本轮完整发布，实际 package、正式 release 和公开消费仍各需新收据；候选或 package 成功不允许覆盖旧 Tag/制品。稳定线晋升经正常 main PR，发布修复再普通 PR 回流 dev，保留原源码与制品验收身份。
+14 个维护中的非 Fork 组件的 verify 自动事件规则只接受目标为 `dev` 的打开中 PR（opened/reopened/synchronize/ready_for_review），dev push、删除分支和其他事件在入队前过滤；发布和 hotfix 保留手动按完整 SHA 验证。CI `88fa120a28acf0b016af4ccd8dc05174f4c7b65a` 的 renderer 已包含该规则，本地四 Job 推广回执只确认固定 CI 更新并保留原 trigger 配置；本轮真实事件过滤及回填效果尚未独立现场验收，不能由源码或 XML 读回推导通过。客服与全部三个 Fork 退出新任务，历史 refs 与制品保留。package 按明确 SOURCE_SHA 制作不可变候选，release 绑定本轮已验收的准确 producer、发布 SHA/Tag 与同一字节；MR 本身不选择制品源码。维护者已授权本轮完整发布，实际 package、正式 release 和公开消费仍各需新收据；候选或 package 成功不允许覆盖旧 Tag/制品。稳定线晋升经正常 main PR，发布修复再普通 PR 回流 dev，保留原源码与制品验收身份。
 
 开发任务 PR 到绑定的开发线并运行 CI；release 从已冻结的开发线创建，hotfix 从对应生产 Tag 创建。
 release/hotfix 对完整 SHA 独立验证后 PR 到稳定维护线，核对当前源、基线、结果树和本次必需检查的准确回填；同 tree 复用保留原证据身份，变化或证据缺失时实际重新验证；
