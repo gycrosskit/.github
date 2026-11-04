@@ -37,6 +37,13 @@ target 'KuiklyRenderProbe' do
     pod ENV.fetch('GYC_MODULE_POD'), **source
   end
 end
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+    end
+  end
+end
 POD
 (cd "$build_dir" && CP_HOME_DIR="$build_dir/cocoapods" pod install) >&2
 native_scheme=${module_pod%%/*}
