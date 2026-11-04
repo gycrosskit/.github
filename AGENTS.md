@@ -7,7 +7,7 @@
 - [AI 评审与中文状态](docs/AI评审与中文状态.md)：自动评审设置与中文规则；旧 Actions 状态同步入口已退役；只评审，不自动修复或合并。
 - [Git Flow 与提交规范](docs/GitFlow与提交规范.md)：分支、提交、PR 与主分支保护；历史 Fork 流程不作为已退役组件的新任务入口。
 - [统一远程验证](docs/统一远程验证.md)：14 个维护组件的 Jenkins 与独立执行共用固定 CI 的 `ci.py component-run`。当前 SDK 重任务统一在登记的 Mac worker 执行，远端 Linux 仅控制、归档和轻量检查；组件双 Mac VM 已退役，通用 VM 仅供 `ci-source/mr-validation`。批量 client 并发参数不等于 SDK worker 数，入口兼容性、部署 pin 和证据范围以该文档的当前部署为准。
-- [发布流程](docs/发布流程.md)：JitPack、Release 归档、ohpm 与远程消费验证。
+- [发布流程](docs/发布流程.md)：JitPack、Release 归档、ohpm 与远程消费验证。新建、迁移 HAR 模块或更新包版本时，SDK 打包前先执行其中的[包内发布文件检查](docs/发布流程.md#har-发布与消费检查点)。
 - [组件抽离路线图](docs/组件抽离路线图.md)：拟建组件、边界和实施顺序。
 - [Issues 与迭代流程](docs/Issues与迭代流程.md)：接入反馈、修复 PR、发布和关闭 Issue。
 
