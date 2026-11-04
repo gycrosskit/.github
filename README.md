@@ -15,8 +15,8 @@
 - [`templates/jitpack-metadata.py`](templates/jitpack-metadata.py)：compose-webview、live-sdk、toast、debug-tools 共用的 KMP 元数据修正脚本模板。
 - [`templates/check-maven.py`](templates/check-maven.py)：校验完整 publication、POM 许可证、Native 变体、实际文件及四种哈希和 sidecar。
 - [`scripts/test-check-maven.py`](scripts/test-check-maven.py)：发布校验的正向与失败场景回归。
-- [持续集成门禁](docs/持续集成门禁.md)：14 个维护组件的 Jenkins 源码、冻结产物和独立远程消费者回归边界。
-- [统一远程验证](docs/统一远程验证.md)：委托受信固定 CI 检出中的 Jenkins client 验证 14 个维护组件，批次显式并发 4，核对 commit 并汇总结果；本机不执行重编译。
+- [持续集成门禁](docs/持续集成门禁.md)：14 个维护组件的源码、冻结产物和独立消费者回归边界。
+- [统一远程验证](docs/统一远程验证.md)：Jenkins 三任务与独立执行的共用入口、当前 Mac worker／轻量 Linux 职责、VM 退役和验收证据边界。
 - [CI 优化与评审计划](docs/CI优化与评审计划.md)：事件分工、下载与缓存、失败证据、版本检查和上线测量。
 - [`templates/check-public-maven.py`](templates/check-public-maven.py)：实际 JitPack 标签、POM/GMM、variant 字节摘要及公开 sidecar 校验；[最小自检](scripts/test-check-public-maven.py)。
 - [`scripts/protect-main.sh`](scripts/protect-main.sh)：为新建的公开仓库配置 `main` 分支保护；规则定义在 [`templates/main-protection.json`](templates/main-protection.json)。

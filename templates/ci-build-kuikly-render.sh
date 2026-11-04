@@ -37,6 +37,16 @@ target 'KuiklyRenderProbe' do
     pod ENV.fetch('GYC_MODULE_POD'), **source
   end
 end
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      deployment_target = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+      if deployment_target.nil? || Gem::Version.new(deployment_target) < Gem::Version.new('15.0')
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+      end
+    end
+  end
+end
 POD
 (cd "$build_dir" && CP_HOME_DIR="$build_dir/cocoapods" pod install) >&2
 native_scheme=${module_pod%%/*}
@@ -44,7 +54,7 @@ native_scheme=${native_scheme:-OpenKuiklyIOSRender}
 xcodebuild -project "$build_dir/Pods/Pods.xcodeproj" -scheme "$native_scheme" \
   -configuration Debug -sdk iphonesimulator \
   -derivedDataPath "$build_dir/DerivedData" -arch "$native_arch" \
-  ONLY_ACTIVE_ARCH=YES CONFIGURATION_BUILD_DIR="$framework_parent" CODE_SIGNING_ALLOWED=NO IPHONEOS_DEPLOYMENT_TARGET=15.0 build >&2
+  ONLY_ACTIVE_ARCH=YES CONFIGURATION_BUILD_DIR="$framework_parent" CODE_SIGNING_ALLOWED=NO build >&2
 binary="$framework_parent/OpenKuiklyIOSRender.framework/OpenKuiklyIOSRender"
 test -f "$binary"
 lipo "$binary" -verify_arch "$native_arch"

@@ -39,13 +39,26 @@ def main():
         tools.mkdir()
         pod = tools / 'pod'
         pod.write_text('''#!/bin/sh
+set -e
 ruby -rjson -e '
 def install!(*); end
 def platform(*); end
 def use_frameworks!(*); end
 def target(*); yield; end
 def pod(*args, **options); (@pods ||= []) << [args, options]; end
+def post_install
+  configurations = [nil, "9.0", "12.0", "14.0", "15.0", "16.0"].map do |version|
+    Struct.new(:build_settings).new({"IPHONEOS_DEPLOYMENT_TARGET" => version})
+  end
+  targets = configurations.each_slice(2).map { |items| Struct.new(:build_configurations).new(items) }
+  project = Struct.new(:targets).new(targets)
+  yield Struct.new(:pods_project).new(project)
+  actual = configurations.map { |config| config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] }
+  raise "Pods deployment target mismatch: #{actual}" unless actual == ["15.0", "15.0", "15.0", "15.0", "15.0", "16.0"]
+  @deployment_target_checked = true
+end
 load "Podfile"
+raise "Pods deployment target hook missing" unless @deployment_target_checked
 File.write(ENV.fetch("DEPENDENCY_RECEIPT"), JSON.generate(@pods))
 '
 exit 75

@@ -5,8 +5,8 @@
 - [组件开发](docs/组件开发.md)：平台边界、公共 API、验证与中文 README。
 - [组件评审技能](skills/gycrosskit-component-review/SKILL.md)：专项全库审查、定向变更评审和修复复审；按公开能力与实际调用链分两轮检查行为及精简。
 - [AI 评审与中文状态](docs/AI评审与中文状态.md)：自动评审设置与中文规则；旧 Actions 状态同步入口已退役；只评审，不自动修复或合并。
-- [Git Flow 与提交规范](docs/GitFlow与提交规范.md)：分支、提交、PR、主分支保护及 Fork 鸿蒙适配流程；Fork 流程作为历史保留；2026-10-29 确认 Koin、Stately、MMKV Fork 不再需要，本地已清理且未新增归档，CI 新任务清单已排除，Jenkins 线上切换待独立验收；GitHub 删库由用户负责，本任务未执行。
-- [统一远程验证](docs/统一远程验证.md)：14 个维护组件使用共用 `scripts/remote-verify.py` 委托固定 CI 检出的 Jenkins client；本地做轻量检查，SDK 编译/回归使用既有共享 Job。已部署四槽准入，批次显式使用 `--parallel 4`；纯组件使用两个 Mac 和一个远端 Linux backend，generic 另可使用本地 Linux，Mac 重编译最多两项，不能按四个组件 SDK worker 计。远程结果只证明对应已推送 SHA，不证明本地未提交/未推送文件。
+- [Git Flow 与提交规范](docs/GitFlow与提交规范.md)：分支、提交、PR 与主分支保护；历史 Fork 流程不作为已退役组件的新任务入口。
+- [统一远程验证](docs/统一远程验证.md)：14 个维护组件的 Jenkins 与独立执行共用固定 CI 的 `ci.py component-run`。当前 SDK 重任务统一在登记的 Mac worker 执行，远端 Linux 仅控制、归档和轻量检查；组件双 Mac VM 已退役，通用 VM 仅供 `ci-source/mr-validation`。批量 client 并发参数不等于 SDK worker 数，入口兼容性、部署 pin 和证据范围以该文档的当前部署为准。
 - [发布流程](docs/发布流程.md)：JitPack、Release 归档、ohpm 与远程消费验证。
 - [组件抽离路线图](docs/组件抽离路线图.md)：拟建组件、边界和实施顺序。
 - [Issues 与迭代流程](docs/Issues与迭代流程.md)：接入反馈、修复 PR、发布和关闭 Issue。
@@ -20,7 +20,7 @@ CI 工具以 Gitee 为唯一维护源。已删除的 GitHub 旧工具库不得�
 
 ## 验证与交付顺序
 
-- 组件先完成改动相关的本地轻量检查及统一远程编译、回归和消费验证，再创建 MR/PR；不在本地运行 Gradle、Swift/Xcode 或 Hvigor 重编译。仅文档修改检查内容、相对链接与 diff，不要求无关重编译。
+- 组件先完成改动相关的轻量检查，再按[统一远程验证](docs/统一远程验证.md)使用 Jenkins 或独立入口完成受影响的 SDK 编译、回归和消费验证，再创建 MR/PR。SDK 重任务使用合格 Mac 的共同执行逻辑、隔离与容量准入，不在候选仓库绕过入口直接重编译，不发到远端 Linux。仅文档修改检查内容、相对链接与 diff，不要求无关重编译。
 - 涉及真机问题或明确要求设备验收时，先本地打包安装并复验相关行为。编译、安装启动、SDK 回执和实际音画分别报告，不能用其中一步代替后续验收。
 - 本地 SDK、签名或设备受阻时先说明具体阻碍与缺失证据，不默认先提 MR/PR 或发 RC；确需例外时由用户明确决定。
 - 上述对应验证通过后再提 MR/PR，Review 与 CI 通过后才合并、发布。组件可用任务内的临时源码接线验证宿主，保持正式依赖配置可恢复；该结果不算 JitPack/Registry 远程消费通过。

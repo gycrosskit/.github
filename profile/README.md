@@ -102,4 +102,4 @@ debug-tools 为多模块 JitPack 项目，根 KMP 坐标使用 `com.github.gycro
 
 2026-10-28：`customer-service`、`mmkv-ohos`、`koin-ohos`、`stately-ohos` 退出新任务与维护清单。2026-10-29 用户确认三个 Fork 不再需要：本地工程、私有验收副本、相关任务接线与产物已清理，未新增归档；CI 新任务清单已排除，Jenkins 线上切换待独立验收。GitHub 删库由用户负责，本任务未执行。上游 Tencent/MMKV、InsertKoinIO/koin 与 touchlab/Stately 不在删除范围。
 
-`customer-service` 保留此前边界：宿主仍消费 Maven 与 Git Pod，保留仓库、原版本与元数据；本次不修改宿主。Jenkins 线上状态以配置读回为准，源码补丁不等于已部署。
+2026-10-31：`customer-service` 确认停止维护，不再安排新功能、常规修复或新版本。2026-11-04 核对宿主 `dev` 已移除原生客服 Maven、Git Pod 依赖配置；`master` 尚未与 `dev` 对齐，保留旧配置属于历史状态，不代表迁移缺陷。依赖配置移除不等于 H5 / WebView 客服已完成真机验收。保留仓库、历史版本与元数据用于追溯，不删除原产物。Jenkins 线上状态以配置读回为准，源码补丁不等于已部署。
