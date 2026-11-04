@@ -39,6 +39,7 @@ def main():
         tools.mkdir()
         pod = tools / 'pod'
         pod.write_text('''#!/bin/sh
+set -e
 ruby -rjson -e '
 def install!(*); end
 def platform(*); end
@@ -46,15 +47,14 @@ def use_frameworks!(*); end
 def target(*); yield; end
 def pod(*args, **options); (@pods ||= []) << [args, options]; end
 def post_install
-  configurations = ["9.0", "12.0", "14.0", "16.0"].map do |version|
+  configurations = [nil, "9.0", "12.0", "14.0", "15.0", "16.0"].map do |version|
     Struct.new(:build_settings).new({"IPHONEOS_DEPLOYMENT_TARGET" => version})
   end
   targets = configurations.each_slice(2).map { |items| Struct.new(:build_configurations).new(items) }
   project = Struct.new(:targets).new(targets)
   yield Struct.new(:pods_project).new(project)
-  raise "Pods deployment target mismatch" unless configurations.all? do |config|
-    config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] == "15.0"
-  end
+  actual = configurations.map { |config| config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] }
+  raise "Pods deployment target mismatch: #{actual}" unless actual == ["15.0", "15.0", "15.0", "15.0", "15.0", "16.0"]
   @deployment_target_checked = true
 end
 load "Podfile"
