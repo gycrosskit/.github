@@ -1,12 +1,12 @@
 # GY CrossKit
 
-> 历史开发候选（2026-10-25）：15 个非 Fork 功能组件统一准备 `1.0.0`，Kuikly 基线 2.29.1；尚未正式发布。package、独立消费与正式发布分别验收，当前 release 暂停。下方旧 Release 链接仅记录当时的发布范围。
+当前维护 18 个组件仓库；用途和职责见[组件索引](https://github.com/gycrosskit/.github/blob/main/docs/组件文档索引.md)。本轮基础组件正式版本：HTTP、Storage、UI Components `1.0.0`，Routing `1.0.1`，Live SDK Maven `1.1.3`（新增 `live-room-core`）；配套原生渠道及实际远程消费范围见[发布流程](https://github.com/gycrosskit/.github/blob/main/docs/发布流程.md#基础组件正式交付2026-11-05)。下面带日期的旧版本表保留当时事实，最新版本以对应仓库 README 为准。
 
 面向 Kotlin Multiplatform、原生与 Kuikly 应用的跨平台组件。按用途选择仓库，再阅读对应 README 完成安装和平台接线。
 
-当前仅维护 Kuikly UI、core 与原生能力；Toast、WebView、Live 的独立 CMP UI 已移除。KMP 编译底座、Kuikly Compose 和 Compose runtime 继续保留。下表带版本链接的旧发布事实保持不变，新候选尚无正式远程消费证明。
+当前仅维护 Kuikly UI、core 与原生能力；Toast、WebView、Live 的独立 CMP UI 已移除。KMP 编译底座、Kuikly Compose 和 Compose runtime 继续保留。下表带版本链接的旧发布事实保持不变，不替代各库当前版本的远程消费证明。
 
-下列历史发布版本核对日期：**2026-10-10**（当前源码/治理说明更新于 2026-10-25），依据各库远程 README 与 Release。Maven 由 JitPack 提供；Git Pod、Swift Package（SPM）与 HarmonyOS HAR 分别安装，配套版本可能不同。预发布状态以 Release 标记为准；发布、精确远程消费和设备业务验收分别记录。OHPM 当前可安装性以组件 README 和 Registry 即时查询为准，本次未查询 Registry。
+下列历史发布版本核对日期：**2026-10-10**，依据当时各库远程 README 与 Release。Maven 由 JitPack 提供；Git Pod、Swift Package（SPM）与 HarmonyOS HAR 分别安装，配套版本可能不同。预发布状态以 Release 标记为准；发布、精确远程消费和设备业务验收分别记录。OHPM 当前可安装性以组件 README、实际收据和 Registry 即时查询为准。
 
 下列历史审查涉及回调、测试、CI 与文档；当时新增生产发版仅为微信 iOS **[native-0.1.8](https://github.com/gycrosskit/wechat/releases/tag/native-0.1.8)**。下表其他版本为已有发布组合，不表示本轮重新发布。
 
@@ -63,7 +63,7 @@ Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上�
 
 ## 动态页面
 
-[dynamic-page](https://github.com/gycrosskit/dynamic-page) 提供动态页面协议与 Kuikly/原生接线；当前 `1.0.0` 为未发布候选，支持范围和接入方式见该库 README 与功能文档。它不属于下面旧版本发布表。
+[dynamic-page](https://github.com/gycrosskit/dynamic-page) 提供动态页面协议与 Kuikly/原生接线；当前精确版本、支持范围和接入方式见该库 README 与功能文档。它不属于下面旧版本发布表。
 
 ## 厂商 SDK 集成
 
@@ -79,9 +79,9 @@ Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上�
 
 ## CI 与自动评审
 
-当前维护 14 个功能组件，三个 OHOS Fork 均已停维，使用共享 Jenkins 的 verify、package、release 三个 Job，分别记录源码验证、准确 SOURCE_SHA 的冻结候选和发布/独立消费证据。开发 PR 目标为 `dev`；自动 verify 的 PR-only 过滤修订正在等待 package 闭合窗口部署，发布和 hotfix 保留手动按 SHA 验证。15 个功能库与规则库 `.github` 的 Actions 已停用；CI 工具以 Gitee 为维护源，不提供 GitHub 工具仓库入口；三个已停维 Fork 已退出 CI 新任务清单，本地已清理；Jenkins 线上切换待独立验收。实际运行与提交覆盖以对应 Jenkins 报告为准，不能由源码或 package 成功推断正式发布和设备验收。
+当前维护 18 个组件，使用共享 Jenkins 的 verify、package、release 三个 Job，分别记录源码验证、冻结候选和发布/独立消费证据。开发 PR 目标为 `dev`；发布和 hotfix 保留手动按完整 SHA 验证。实际部署及自动事件验收边界见[统一远程验证](https://github.com/gycrosskit/.github/blob/main/docs/统一远程验证.md)。旧 Actions 已停用，CI 工具只在 Gitee 维护；客服和三个 Fork 退出新任务。实际运行与提交覆盖以准确报告为准，源码或 package 成功不代算正式发布和设备验收。
 
-新候选的最新功能（包括 WebView iOS PiP owner/宿主接线）以各库当前功能文档与准确 SHA 验证为准；旧版本表不能替代本次 `1.0.0`。
+新候选的最新功能（包括 WebView iOS PiP owner/宿主接线）以各库当前功能文档与准确 SHA 验证为准；旧版本表不能替代当前版本的验收。
 
 已启用 Automatic review 的仓库在创建待审查 PR / 草稿转为可审查时触发自动 AI 评审，不能保证每次 push 都完成最新提交评审。旧 Actions 中文状态同步入口已退出；评审不自动修复或合并。规则见[AI 评审与中文状态](https://github.com/gycrosskit/.github/blob/main/docs/AI评审与中文状态.md)。
 
