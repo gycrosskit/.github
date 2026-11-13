@@ -90,7 +90,7 @@ flowchart TB
 
 ## CI 与自动评审
 
-18 个维护组件共用 Jenkins verify、package、release 入口，分别记录源码验证、冻结候选和发布 / 独立消费证据。任务目标分支、实际部署与自动事件验收边界见[统一远程验证](https://github.com/gycrosskit/.github/blob/main/docs/统一远程验证.md#执行前核对)和[Git Flow 与提交规范](https://github.com/gycrosskit/.github/blob/main/docs/GitFlow与提交规范.md)。CI 工具只在 Gitee 维护。
+18 个维护组件复用 Jenkins 与本机独立执行的检查、构建和发布合同，分别记录源码验证、冻结候选和发布 / 独立消费证据。本轮正式发布走本机入口，不依赖触发 Jenkins Job；各入口的实际部署与 writer 边界见[统一远程验证](https://github.com/gycrosskit/.github/blob/main/docs/统一远程验证.md#执行前核对)，任务分支规则见[Git Flow 与提交规范](https://github.com/gycrosskit/.github/blob/main/docs/GitFlow与提交规范.md)。CI 工具只在 Gitee 维护。
 
 已启用 Automatic review 的仓库在创建待审查 PR / 草稿转为可审查时触发自动 AI 评审，不能保证每次 push 都完成最新提交评审；评审不自动修复或合并。规则见[AI 评审与中文状态](https://github.com/gycrosskit/.github/blob/main/docs/AI评审与中文状态.md)。
 
