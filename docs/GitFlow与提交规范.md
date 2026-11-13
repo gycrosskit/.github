@@ -81,7 +81,7 @@ Fork 行沿用既有维护登记，本轮不复核或调整其分支、源码和
 
 18 个维护中的非 Fork 组件均有 `main`、`dev`。任务 PR 指向 `dev`；普通 merge 保留历史，release/hotfix 验证与发布仍绑定准确 SHA。共用规则库 `.github` 的 PR 指向 `main`。CI 工具只在 Gitee 维护，遵循该仓库的 MR 与固定版本规则；不再查询、复建或同步已删除的 GitHub 旧工具库。不得在未验收真实回填前把新 Jenkins context 设为必需检查，保护规则不使用默认模板覆盖。
 
-18 个维护中的非 Fork 组件的 verify 自动事件规则只接受目标为 `dev` 的打开中 PR（opened/reopened/synchronize/ready_for_review），dev push、删除分支和其他事件在入队前过滤；发布和 hotfix 保留手动按完整 SHA 验证。现行 renderer 与保护范围见[当前部署](统一远程验证.md#当前部署2026-11-05)；早期 CI `88fa120a28acf0b016af4ccd8dc05174f4c7b65a` 已包含原 14 项的该规则，四 Job 推广回执仅确认配置更新并保留原 trigger。新增基础组件的真实事件过滤及回填效果尚未独立现场验收，不能由源码或 XML 读回推导通过。客服与全部三个 Fork 退出新任务，历史 refs 与制品保留。package 按明确 SOURCE_SHA 制作不可变候选，release 绑定本轮已验收的准确 producer、发布 SHA/Tag 与同一字节；MR 本身不选择制品源码。维护者已授权本轮完整发布，实际 package、正式 release 和公开消费仍各需新收据；候选或 package 成功不允许覆盖旧 Tag/制品。稳定线晋升经正常 main PR，发布修复再普通 PR 回流 dev，保留原源码与制品验收身份。
+18 个维护中的非 Fork 组件的 verify 自动事件规则只接受目标为 `dev` 的打开中 PR（opened/reopened/synchronize/ready_for_review），dev push、删除分支和其他事件在入队前过滤；发布和 hotfix 保留手动按完整 SHA 验证。现行 renderer 与保护范围见[当前部署](统一远程验证.md#执行前核对)；早期 CI `88fa120a28acf0b016af4ccd8dc05174f4c7b65a` 已包含原 14 项的该规则，四 Job 推广回执仅确认配置更新并保留原 trigger。新增基础组件的真实事件过滤及回填效果尚未独立现场验收，不能由源码或 XML 读回推导通过。客服与全部三个 Fork 退出新任务，历史 refs 与制品保留。package 按明确 SOURCE_SHA 制作不可变候选，release 绑定本轮已验收的准确 producer、发布 SHA/Tag 与同一字节；MR 本身不选择制品源码。维护者已授权本轮完整发布，实际 package、正式 release 和公开消费仍各需新收据；候选或 package 成功不允许覆盖旧 Tag/制品。稳定线晋升经正常 main PR，发布修复再普通 PR 回流 dev，保留原源码与制品验收身份。
 
 开发任务 PR 到绑定的开发线并运行 CI；release 从已冻结的开发线创建，hotfix 从对应生产 Tag 创建。
 release/hotfix 对完整 SHA 独立验证后 PR 到稳定维护线，核对当前源、基线、结果树和本次必需检查的准确回填；同 tree 复用保留原证据身份，变化或证据缺失时实际重新验证；

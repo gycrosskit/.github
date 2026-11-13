@@ -1,14 +1,8 @@
 # GY CrossKit
 
-当前维护 18 个组件仓库；用途和职责见[组件索引](https://github.com/gycrosskit/.github/blob/main/docs/组件文档索引.md)。本轮基础组件正式版本：HTTP、Storage、UI Components `1.0.0`，Routing `1.0.1`，Live SDK Maven `1.1.3`（新增 `live-room-core`）；配套原生渠道及实际远程消费范围见[发布流程](https://github.com/gycrosskit/.github/blob/main/docs/发布流程.md#基础组件正式交付2026-11-05)。下面带日期的旧版本表保留当时事实，最新版本以对应仓库 README 为准。
+面向 Kotlin Multiplatform、原生与 Kuikly 应用的跨平台组件，当前维护 18 个组件仓库。按用途选择仓库，再阅读对应 README 完成安装和平台接线；详细职责与文档入口见[组件索引](https://github.com/gycrosskit/.github/blob/main/docs/组件文档索引.md)。
 
-面向 Kotlin Multiplatform、原生与 Kuikly 应用的跨平台组件。按用途选择仓库，再阅读对应 README 完成安装和平台接线。
-
-当前仅维护 Kuikly UI、core 与原生能力；Toast、WebView、Live 的独立 CMP UI 已移除。KMP 编译底座、Kuikly Compose 和 Compose runtime 继续保留。下表带版本链接的旧发布事实保持不变，不替代各库当前版本的远程消费证明。
-
-下列历史发布版本核对日期：**2026-10-10**，依据当时各库远程 README 与 Release。Maven 由 JitPack 提供；Git Pod、Swift Package（SPM）与 HarmonyOS HAR 分别安装，配套版本可能不同。预发布状态以 Release 标记为准；发布、精确远程消费和设备业务验收分别记录。OHPM 当前可安装性以组件 README、实际收据和 Registry 即时查询为准。
-
-下列历史审查涉及回调、测试、CI 与文档；当时新增生产发版仅为微信 iOS **[native-0.1.8](https://github.com/gycrosskit/wechat/releases/tag/native-0.1.8)**。下表其他版本为已有发布组合，不表示本轮重新发布。
+当前维护 core、原生能力与 Kuikly UI；Toast、WebView、Live 的独立 CMP UI 已移除，Kuikly Compose 和所需 Compose runtime 继续保留。各库 README 与 Releases 是版本和安装信息的来源，本页不重复维护版本表或消费验收快照。
 
 ## 组件地图与接入流程
 
@@ -16,7 +10,8 @@
 
 ```mermaid
 flowchart LR
-    App["宿主应用：业务、账号、UI、隐私准入"] --> Platform["平台能力：permission / media / scanner / location / toast / sound / system-actions"]
+    App["宿主应用：业务、账号、UI、隐私准入"] --> Foundation["基础：http / storage / routing / ui-components"]
+    App --> Platform["平台能力：permission / media / scanner / location / toast / sound / system-actions"]
     App --> Web["网页：compose-webview"]
     App --> Vendor["厂商适配：jverification / wechat / live-sdk"]
     App --> Diagnostics["诊断：diagnostics / debug-tools"]
@@ -26,64 +21,78 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    Choose["选择组件与 UI 入口"] --> Matrix["核对平台、工具链与配套版本"]
-    Matrix --> Maven["安装 Maven / KMP 依赖"]
-    Maven --> Native{"该入口需要独立原生包？"}
-    Native -->|"需要"| Package["按 README 安装 Pod / SPM / HAR"]
+    Choose["选择组件与入口"] --> Matrix["核对平台、工具链与配套版本"]
+    Matrix --> Install["按 README 安装所选入口依赖"]
+    Install --> Native{"该入口需要独立原生包？"}
+    Native -->|"需要"| Package["安装配套 Git Pod / SPM / HAR / OHPM 包"]
     Native -->|"不需要"| Wire["宿主初始化、注册、权限与生命周期接线"]
     Package --> Wire
     Wire --> Build["目标平台编译与链接"]
     Build --> Device["真机与业务验收"]
 ```
 
-Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上架分别确认，编译通过后仍需真机验收。
+各组件支持的渠道及配套版本可能不同，接入时分别核对：
+
+- Maven / KMP：按组件 README 固定坐标、版本与仓库，核对所需平台变体。
+- Git Pod：按 README 的 Git URL、不可变 Tag 和 subspec 安装；Git Pod 不表示已发布到 CocoaPods Specs。
+- Swift Package（SPM）：单独核对 Package 产品、Tag 和原生依赖，不从 Git Pod 或 Maven 版本推断。
+- HAR：核对对应 Release 的包名、版本、最低系统要求和配套依赖。
+- OHPM：核对 Registry 中的精确包版本与安装状态；Release 可下载 HAR 不表示 OHPM 已上架。
+
+发布、精确远程消费和设备业务验收分别确认；相同版本号、共同 core 或编译通过不表示各入口的能力与设备行为一致。
+
+## 基础组件
+
+| 仓库与接入入口 | 用途 | 发布记录 |
+| --- | --- | --- |
+| [http](https://github.com/gycrosskit/http) | HTTP 模型、传输引擎、序列化和显式重试 | [Releases](https://github.com/gycrosskit/http/releases) |
+| [storage](https://github.com/gycrosskit/storage) | 类型化存储与原生驱动；目录、Store ID 和业务迁移由宿主提供 | [Releases](https://github.com/gycrosskit/storage/releases) |
+| [routing](https://github.com/gycrosskit/routing) | 通用路由与 KSP 生成；业务目的地、准入与页面工厂由宿主提供 | [Releases](https://github.com/gycrosskit/routing/releases) |
+| [ui-components](https://github.com/gycrosskit/ui-components) | 公共 Kuikly 控件、主题输入与平台绘制兼容 | [Releases](https://github.com/gycrosskit/ui-components/releases) |
 
 ## UI 与平台能力
 
-| 仓库 | 用途 | 平台 | Maven 版本 | 独立原生渠道 |
-| --- | --- | --- | --- | --- |
-| [compose-webview](https://github.com/gycrosskit/compose-webview) | 网页、导航、JSBridge、资源缓存与网站数据清理 | CMP：Android/iOS；Kuikly：三端 | [0.2.0-rc.16](https://github.com/gycrosskit/compose-webview/releases/tag/0.2.0-rc.16) | Git Pod **0.2.0-rc.16**；HAR **0.2.0-rc.14**，配套 system-actions HAR **0.2.0-rc.4**；导航、文件选择及 Cookie 限制见 README |
-| [permission](https://github.com/gycrosskit/permission) | 权限请求与历史状态 | 三端 | [0.1.9](https://github.com/gycrosskit/permission/releases/tag/0.1.9) | 可选 `GycPermissionKuikly/Kuikly` Git Pod **0.1.9**；HAR **0.1.6**；iOS core 为 KMP 原生实现 |
-| [media](https://github.com/gycrosskit/media) | 选图、拍照、压缩、保存相册与 Kuikly 传输桥 | 三端 | [0.1.9](https://github.com/gycrosskit/media/releases/tag/0.1.9) | 可选 `GycMediaKuikly/Kuikly` Git Pod **0.1.9**；SPM **[native-0.1.4](https://github.com/gycrosskit/media/releases/tag/native-0.1.4)**；HAR **0.1.6** |
-| [scanner](https://github.com/gycrosskit/scanner) | 二维码解码与原生扫码 | 三端 | [0.1.9](https://github.com/gycrosskit/scanner/releases/tag/0.1.9) | SPM **[0.1.8](https://github.com/gycrosskit/scanner/releases/tag/0.1.8)**；HAR **0.1.4**；OHOS 使用系统扫码 |
-| [toast](https://github.com/gycrosskit/toast) | 原生短消息、CMP/KuiklyCompose 消息展示 | 三端 | [0.1.6](https://github.com/gycrosskit/toast/releases/tag/0.1.6) | Git Pod **0.1.6**（可选 `/Kuikly` receiver）；SPM presenter **[0.1.5](https://github.com/gycrosskit/toast/releases/tag/0.1.5)**；HAR **0.1.3** |
-| [location](https://github.com/gycrosskit/location) | 位置请求、取消与 Kuikly 请求桥 | 三端 | [0.1.6](https://github.com/gycrosskit/location/releases/tag/0.1.6) | 可选 `GycLocationKuikly/Kuikly` Git Pod **0.1.6**；HAR **0.1.4**；iOS core 为 KMP 原生实现 |
-| [system-actions](https://github.com/gycrosskit/system-actions) | 系统设置、分享、UIKit 与窗口策略 | 三端 | [0.2.0-rc.7](https://github.com/gycrosskit/system-actions/releases/tag/0.2.0-rc.7) | Git Pod **0.2.0-rc.7**（可选 `/Kuikly` receiver）；SPM **[0.2.0-rc.6](https://github.com/gycrosskit/system-actions/releases/tag/0.2.0-rc.6)**；HAR **0.2.0-rc.5**（[独立 Release](https://github.com/gycrosskit/system-actions/releases/tag/native-0.2.0-rc.7)） |
-| [sound](https://github.com/gycrosskit/sound) | 音频准备、播放与事件 | 三端 | [0.1.6](https://github.com/gycrosskit/sound/releases/tag/0.1.6) | 可选 `GYCSound/Kuikly` Git Pod **0.1.6**；HAR **[0.1.2](https://github.com/gycrosskit/sound/releases/tag/har-0.1.2)** |
+| 仓库与接入入口 | 用途 | 发布记录 |
+| --- | --- | --- |
+| [compose-webview](https://github.com/gycrosskit/compose-webview) | 网页、导航、JSBridge、资源缓存与网站数据清理 | [Releases](https://github.com/gycrosskit/compose-webview/releases) |
+| [permission](https://github.com/gycrosskit/permission) | 权限状态、申请与结果映射 | [Releases](https://github.com/gycrosskit/permission/releases) |
+| [media](https://github.com/gycrosskit/media) | 选图、拍照、处理、保存相册与 Kuikly 传输桥 | [Releases](https://github.com/gycrosskit/media/releases) |
+| [scanner](https://github.com/gycrosskit/scanner) | 二维码解码、原生扫码与 Kuikly 预览 | [Releases](https://github.com/gycrosskit/scanner/releases) |
+| [toast](https://github.com/gycrosskit/toast) | 提示状态、Kuikly MessageHost 与原生提示 | [Releases](https://github.com/gycrosskit/toast/releases) |
+| [location](https://github.com/gycrosskit/location) | 单次定位、缓存、取消与 Kuikly 请求桥 | [Releases](https://github.com/gycrosskit/location/releases) |
+| [system-actions](https://github.com/gycrosskit/system-actions) | 外部动作、系统观察与原生窗口策略 | [Releases](https://github.com/gycrosskit/system-actions/releases) |
+| [sound](https://github.com/gycrosskit/sound) | 音频准备、播放、事件与释放 | [Releases](https://github.com/gycrosskit/sound/releases) |
 
-
-“三端”指 Android、iOS 与 HarmonyOS / OpenHarmony。上表记录明确版本的发布范围，旧 CMP 能力不代表当前未发布候选；新候选以 core、原生与 Kuikly 为维护入口，保留 Kuikly Compose。UI、注册及生命周期按入口接线，OHOS 使用 Kuikly/ArkTS HAR 或已声明的 core 能力。各平台入口和能力以仓库说明为准。HAR 的完整包名、最低系统要求、权限与释放规则请查对应 README；库版本相同也不代表 API 和设备行为完全一致。
+具体支持平台、模块和缺失能力以各库当前功能文档为准。OHOS 按组件提供的 Kuikly / ArkTS HAR 或 core 入口接线，不存在独立 CMP OHOS runtime。
 
 ## 诊断与开发工具
 
-| 仓库 | 用途 | 平台 | Maven 版本 | 接入边界 |
-| --- | --- | --- | --- | --- |
-| [diagnostics](https://github.com/gycrosskit/diagnostics) | 系统采集、私有文件、日志与有界网络诊断 | 三端、JVM | [0.2.0-rc.10](https://github.com/gycrosskit/diagnostics/releases/tag/0.2.0-rc.10) | Git Pod / SPM **[0.2.0-rc.1](https://github.com/gycrosskit/diagnostics/releases/tag/0.2.0-rc.1)**；可选 Ktor / OkHttp 采集；宿主配置正文额度、准入、脱敏、上传与凭据，无 HAR |
-| [debug-tools](https://github.com/gycrosskit/debug-tools) | Bug 协议、安全存储与摇动 | Android、iOS、OHOS | [0.2.0-rc.6](https://github.com/gycrosskit/debug-tools/releases/tag/0.2.0-rc.6) | OHOS 配套 HAR **0.2.0-rc.3**；宿主提供 UI、品牌、凭据与准入 |
+| 仓库与接入入口 | 用途 | 发布记录 |
+| --- | --- | --- |
+| [diagnostics](https://github.com/gycrosskit/diagnostics) | 报告存储、系统采集与有界网络诊断 | [Releases](https://github.com/gycrosskit/diagnostics/releases) |
+| [debug-tools](https://github.com/gycrosskit/debug-tools) | 问题上报控制、证据、持久化与摇动；表单 UI、凭据和准入由宿主提供 | [Releases](https://github.com/gycrosskit/debug-tools/releases) |
 
 ## 动态页面
 
-[dynamic-page](https://github.com/gycrosskit/dynamic-page) 提供动态页面协议与 Kuikly/原生接线；当前精确版本、支持范围和接入方式见该库 README 与功能文档。它不属于下面旧版本发布表。
+| 仓库与接入入口 | 用途 | 发布记录 |
+| --- | --- | --- |
+| [dynamic-page](https://github.com/gycrosskit/dynamic-page) | 动态页面协议、入口与资源加载，配套 Kuikly / 原生接线 | [Releases](https://github.com/gycrosskit/dynamic-page/releases) |
 
 ## 厂商 SDK 集成
 
-| 仓库 | 用途 | 平台 | Maven 版本 | 独立原生渠道与状态 |
-| --- | --- | --- | --- | --- |
-| [live-sdk](https://github.com/gycrosskit/live-sdk) | 腾讯 AtomicX 直播、预览、中立 IM 与 SDK 身份归属 | 直播：Android、iOS；core 中立协议：三端 | [0.2.1-rc.13](https://github.com/gycrosskit/live-sdk/releases/tag/0.2.1-rc.13) | Git Pod **0.2.1-rc.13**；OHOS core KLIB 不提供直播、IM 原生运行时或 PiP |
-| [jverification](https://github.com/gycrosskit/jverification) | 极光一键登录与授权页事件 | 三端 | [0.1.5](https://github.com/gycrosskit/jverification/releases/tag/0.1.5) | Git Pod **0.1.5**（可选 `/Kuikly` receiver）；HAR **0.1.0** |
-| [wechat](https://github.com/gycrosskit/wechat) | 微信授权、分享、转账确认页与请求恢复存储 | 三端 | [0.1.8](https://github.com/gycrosskit/wechat/releases/tag/0.1.8) | SPM / Git Pod **[native-0.1.8](https://github.com/gycrosskit/wechat/releases/tag/native-0.1.8)**（Pod 内部 **0.1.8**，可选 `/Kuikly` receiver）；HAR **0.1.6** |
+| 仓库与接入入口 | 用途 | 发布记录 |
+| --- | --- | --- |
+| [live-sdk](https://github.com/gycrosskit/live-sdk) | 直播会话、预览、消息、控制与 PiP；平台能力和原生运行时按库内合同选择 | [Releases](https://github.com/gycrosskit/live-sdk/releases) |
+| [jverification](https://github.com/gycrosskit/jverification) | 极光一键登录准备、授权页与取消 | [Releases](https://github.com/gycrosskit/jverification/releases) |
+| [wechat](https://github.com/gycrosskit/wechat) | 微信授权、分享、转账确认页与请求恢复存储 | [Releases](https://github.com/gycrosskit/wechat/releases) |
 
-厂商 SDK、AppID、签名、Universal Link、账号及隐私准入由宿主负责。Git Pod 不表示发布到 CocoaPods Specs；Swift Package 是否包含厂商二进制须查仓库接线说明。
-
-微信 **native-0.1.8** 的精确远程 Git Pod / SPM 消费及 Release CI 已通过；Maven **0.1.8**、HAR **0.1.6** 保持既有版本。设备业务仍待宿主验收，微信页面回执不证明资金到账；Live 实际账号与设备行为也需单独验收。
+厂商 SDK、AppID、签名、Universal Link、账号及隐私准入由宿主负责；页面回执不证明资金到账。`live-sdk` 的 `live-room-core` 提供中立配置、房间归属与弹层队列，不要求引入腾讯原生运行时；完整直播、IM 和 PiP 的支持范围另查该库功能文档。
 
 ## CI 与自动评审
 
-当前维护 18 个组件，使用共享 Jenkins 的 verify、package、release 三个 Job，分别记录源码验证、冻结候选和发布/独立消费证据。开发 PR 目标为 `dev`；发布和 hotfix 保留手动按完整 SHA 验证。实际部署及自动事件验收边界见[统一远程验证](https://github.com/gycrosskit/.github/blob/main/docs/统一远程验证.md)。旧 Actions 已停用，CI 工具只在 Gitee 维护；客服和三个 Fork 退出新任务。实际运行与提交覆盖以准确报告为准，源码或 package 成功不代算正式发布和设备验收。
+18 个维护组件共用 Jenkins verify、package、release 入口，分别记录源码验证、冻结候选和发布 / 独立消费证据。任务目标分支、实际部署与自动事件验收边界见[统一远程验证](https://github.com/gycrosskit/.github/blob/main/docs/统一远程验证.md#执行前核对)和[Git Flow 与提交规范](https://github.com/gycrosskit/.github/blob/main/docs/GitFlow与提交规范.md)。CI 工具只在 Gitee 维护。
 
-新候选的最新功能（包括 WebView iOS PiP owner/宿主接线）以各库当前功能文档与准确 SHA 验证为准；旧版本表不能替代当前版本的验收。
-
-已启用 Automatic review 的仓库在创建待审查 PR / 草稿转为可审查时触发自动 AI 评审，不能保证每次 push 都完成最新提交评审。旧 Actions 中文状态同步入口已退出；评审不自动修复或合并。规则见[AI 评审与中文状态](https://github.com/gycrosskit/.github/blob/main/docs/AI评审与中文状态.md)。
+已启用 Automatic review 的仓库在创建待审查 PR / 草稿转为可审查时触发自动 AI 评审，不能保证每次 push 都完成最新提交评审；评审不自动修复或合并。规则见[AI 评审与中文状态](https://github.com/gycrosskit/.github/blob/main/docs/AI评审与中文状态.md)。
 
 ## 文档与反馈
 
@@ -94,12 +103,8 @@ Maven 和原生包可能使用不同版本；HAR 的 Release 下载与 OHPM 上�
 - 自动门禁：[组件源码、发布产物及独立消费验证](https://github.com/gycrosskit/.github/blob/main/docs/持续集成门禁.md)。
 - 共用维护：[组件文档规范](https://github.com/gycrosskit/.github/blob/main/docs/组件文档规范.md) · [发布流程](https://github.com/gycrosskit/.github/blob/main/docs/发布流程.md)。
 
-debug-tools 为多模块 JitPack 项目，根 KMP 坐标使用 `com.github.gycrosskit.debug-tools:debug-tools`；安装时按 README 固定版本。Maven、Git Pod 与 OHPM 各自验收，Release 可下载不表示 OHPM 已上架。
-
 各组件与上游、厂商 SDK 的许可证分别以对应仓库 README 和 LICENSE 为准。
 
 ## 停维与清理边界
 
-2026-10-28：`customer-service`、`mmkv-ohos`、`koin-ohos`、`stately-ohos` 退出新任务与维护清单。2026-10-29 用户确认三个 Fork 不再需要：本地工程、私有验收副本、相关任务接线与产物已清理，未新增归档；CI 新任务清单已排除，Jenkins 线上切换待独立验收。GitHub 删库由用户负责，本任务未执行。上游 Tencent/MMKV、InsertKoinIO/koin 与 touchlab/Stately 不在删除范围。
-
-2026-10-31：`customer-service` 确认停止维护，不再安排新功能、常规修复或新版本。2026-11-04 核对宿主 `dev` 已移除原生客服 Maven、Git Pod 依赖配置；`master` 尚未与 `dev` 对齐，保留旧配置属于历史状态，不代表迁移缺陷。依赖配置移除不等于 H5 / WebView 客服已完成真机验收。保留仓库、历史版本与元数据用于追溯，不删除原产物。Jenkins 线上状态以配置读回为准，源码补丁不等于已部署。
+`customer-service`、`mmkv-ohos`、`koin-ohos`、`stately-ohos` 已停止维护，不参与新的组件验证与发布；历史仓库、refs、制品及清理的维护边界见[组件索引](https://github.com/gycrosskit/.github/blob/main/docs/组件文档索引.md#停维与删除边界)。
