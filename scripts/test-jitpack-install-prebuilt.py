@@ -1,4 +1,4 @@
-"""本地验证 JitPack 实际来源/摘要校验；不联网、不运行 SDK。"""
+"""用 Python 3.5 或更新版本验证 JitPack 来源与摘要校验；不联网、不运行 SDK。"""
 import hashlib
 import io
 import json
@@ -30,7 +30,7 @@ class JitPackInstallTest(unittest.TestCase):
         self.archive()
 
     def archive(self, members=None):
-        with tarfile.open(self.staging / self.name, "w:gz") as bundle:
+        with tarfile.open(str(self.staging / self.name), "w:gz") as bundle:
             for name, link in members or [("com/github/gycrosskit/probe/1.2.3/probe.pom", None)]:
                 item = tarfile.TarInfo(name)
                 payload = b"verified artifact"
@@ -52,7 +52,7 @@ class JitPackInstallTest(unittest.TestCase):
             if checksum is None else checksum)
         return subprocess.run([sys.executable, "-c", VERIFY, self.repository, "1.2.3",
             "a" * 40, "b" * 40, str(self.staging), str(self.root / "m2"), str(self.root / "build")],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
     def test_matching_release_extracts_frozen_bytes_to_both_destinations(self):
         result = self.run_verify()
